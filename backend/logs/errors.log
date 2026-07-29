@@ -1,0 +1,13 @@
+{"timestamp": "2026-07-24T21:56:50.609034Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:56:52.136513Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:56:53.302504Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-visits/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:57:21.267127Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:57:22.400396Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:57:23.546939Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-visits/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T21:57:38.764938Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-visits/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:00:13.390217Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-visits/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:02:15.591000Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-visits/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:06:14.417902Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:06:15.652716Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:06:55.148451Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
+{"timestamp": "2026-07-24T22:06:55.166374Z", "level": "ERROR", "logger": "django.request", "message": "Internal Server Error: /api/v1/site-inspections/", "module": "log", "funcName": "log_response"}
