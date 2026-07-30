@@ -1,22 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.tsx';
 
-// React Query
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// MUI Theme
-import ThemeProvider, { usePreferredTheme } from './lib/theme';
-import { useMemo } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import queryClient from './lib/queryClient';
+import ThemeProvider from './lib/theme';
 
-const queryClient = new QueryClient();
-
-function Root() {
-  const { theme } = usePreferredTheme('light');
-  // pass theme into ThemeProvider
+export function Root() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider>
         <App />
       </ThemeProvider>
     </QueryClientProvider>

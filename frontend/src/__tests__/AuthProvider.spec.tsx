@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, vi, beforeEach } from 'vitest';
-import React from 'react';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 // Mock the auth API module
 vi.mock('../api/auth', () => ({
@@ -42,8 +41,8 @@ describe('AuthProvider', () => {
   });
 
   it('restores session when refresh token exists', async () => {
-    (refreshSession as unknown as vi.Mock).mockResolvedValue('access-1');
-    (fetchProfile as unknown as vi.Mock).mockResolvedValue({ email: 'test@example.com' });
+    ((refreshSession as unknown) as { mockResolvedValue: (value: unknown) => void }).mockResolvedValue('access-1');
+    ((fetchProfile as unknown) as { mockResolvedValue: (value: unknown) => void }).mockResolvedValue({ email: 'test@example.com' });
 
     window.localStorage.setItem('meims_refresh_token', 'refresh-1');
 

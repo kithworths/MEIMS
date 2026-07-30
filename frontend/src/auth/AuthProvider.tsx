@@ -102,13 +102,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!u) return false;
 
       if (Array.isArray(u.permissions) && u.permissions.includes(permission)) return true;
+      if (u.is_superuser || u.is_staff) return true;
+
       if (Array.isArray(u.roles)) {
-        // If roles carry permissions mapping, a backend-driven permissions check should be used.
-        // For now, allow access if any role matches the permission string (best-effort).
-        if (u.roles.includes(permission)) return true;
+        const roles = u.roles as string[];
+        if (roles.includes(permission)) return true;
+        const permissionModule = permission.split('.')[0];
+        if (roles.some((role) => role.toLowerCase() === permissionModule.toLowerCase())) return true;
       }
 
-      // Default: deny if permission explicitly required
+      if (typeof u.role === 'string') {
+        const roleName = u.role.toLowerCase();
+        if (roleName === permission.toLowerCase() || permission.toLowerCase().startsWith(`${roleName}.`)) return true;
+      }
+
       return false;
     },
     [user],

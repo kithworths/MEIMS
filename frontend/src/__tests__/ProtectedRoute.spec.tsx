@@ -1,7 +1,6 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { describe, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock useAuth to control authentication state
 vi.mock('../auth/useAuth', () => ({
@@ -26,7 +25,7 @@ function Unauthorized() {
 
 describe('ProtectedRoute', () => {
   it('redirects unauthenticated users to /login', () => {
-    (useAuth as unknown as vi.Mock).mockReturnValue({ loading: false, isAuthenticated: false, hasPermission: () => false });
+    ((useAuth as unknown) as { mockReturnValue: (value: unknown) => void }).mockReturnValue({ loading: false, isAuthenticated: false, hasPermission: () => false });
 
     render(
       <MemoryRouter initialEntries={[ '/' ]}>
@@ -42,7 +41,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('renders private page for authenticated users', () => {
-    (useAuth as unknown as vi.Mock).mockReturnValue({ loading: false, isAuthenticated: true, hasPermission: () => true });
+    ((useAuth as unknown) as { mockReturnValue: (value: unknown) => void }).mockReturnValue({ loading: false, isAuthenticated: true, hasPermission: () => true });
 
     render(
       <MemoryRouter initialEntries={[ '/' ]}>
@@ -57,7 +56,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('redirects authenticated users without permission to /unauthorized', () => {
-    (useAuth as unknown as vi.Mock).mockReturnValue({ loading: false, isAuthenticated: true, hasPermission: () => false });
+    ((useAuth as unknown) as { mockReturnValue: (value: unknown) => void }).mockReturnValue({ loading: false, isAuthenticated: true, hasPermission: () => false });
 
     render(
       <MemoryRouter initialEntries={[ '/' ]}>

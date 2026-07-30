@@ -1,50 +1,82 @@
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
-import BusinessIcon from '@mui/icons-material/Business';
-import FolderIcon from '@mui/icons-material/Folder';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import MapIcon from '@mui/icons-material/Map';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
+import useAuth from '../auth/useAuth';
+import { type ReactNode } from 'react';
 
 interface SidebarProps {
   open: boolean;
   onClose?: () => void;
+  mobile?: boolean;
 }
 
-const navItems = [
+interface NavItem {
+  label: string;
+  icon: ReactNode;
+  to: string;
+  permission?: string;
+}
+
+const navItems: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, to: '/' },
-  { label: 'Users', icon: <PersonIcon />, to: '/users' },
-  { label: 'Departments', icon: <BusinessIcon />, to: '/departments' },
-  { label: 'Projects', icon: <FolderIcon />, to: '/projects' },
-  { label: 'Finance', icon: <ReceiptIcon />, to: '/finance' },
-  { label: 'GIS', icon: <MapIcon />, to: '/gis' },
-  { label: 'Settings', icon: <SettingsIcon />, to: '/settings' },
+  { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.view_role' },
+  { label: 'Profile', icon: <SettingsIcon />, to: '/profile' },
 ];
 
-export default function Sidebar({ open, onClose }: SidebarProps) {
+export default function Sidebar({ open, onClose, mobile }: SidebarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const auth = useAuth();
+
+  const handleNavigation = (to: string) => {
+    navigate(to);
+    if (mobile && onClose) {
+      onClose();
+    }
+  };
 
   return (
-    <Drawer open={open} onClose={onClose} variant="temporary">
-      <Box sx={{ width: 250 }} role="presentation" onClick={onClose} onKeyDown={onClose}>
-        <List>
-          {navItems.map((item) => (
-            <ListItem button key={item.label} onClick={() => navigate(item.to)}>
+    <Drawer
+      variant={mobile ? 'temporary' : 'permanent'}
+      open={open}
+      onClose={onClose}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        width: 250,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: 250,
+          boxSizing: 'border-box',
+        },
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ fontWeight: 700, fontSize: 18 }}>MEIMS</Box>
+        <Box sx={{ mt: 1, color: 'text.secondary' }}>Enterprise operations</Box>
+      </Box>
+      <Divider />
+      <List>
+        {navItems
+          .filter((item) => !item.permission || auth.hasPermission(item.permission))
+          .map((item) => (
+            <ListItemButton
+              key={item.label}
+              selected={location.pathname === item.to}
+              onClick={() => handleNavigation(item.to)}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
-            </ListItem>
+            </ListItemButton>
           ))}
-        </List>
-        <Divider />
-      </Box>
+      </List>
     </Drawer>
   );
 }

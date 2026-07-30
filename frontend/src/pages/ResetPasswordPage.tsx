@@ -41,7 +41,8 @@ export default function ResetPasswordPage() {
       await resetPassword(token, password, confirmPassword);
       setMessage('Your password was updated successfully. You can now sign in with the new password.');
       setTimeout(() => navigate('/login'), 1500);
-    } catch (error) {
+    } catch (_error) {
+      void _error;
       setErrors('Unable to complete password reset. Please verify your reset token and try again.');
     } finally {
       setIsSubmitting(false);

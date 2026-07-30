@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../auth/useAuth';
+import LoadingScreen from '../components/LoadingScreen';
 import logger from '../lib/logger';
 
 interface ProtectedRouteProps {
@@ -14,13 +15,7 @@ export default function ProtectedRoute({ children, requiredPermission }: Protect
   const location = useLocation();
 
   if (auth.loading) {
-    return (
-      <main className="page-shell">
-        <div className="page-card">
-          <p>Verifying secure session…</p>
-        </div>
-      </main>
-    );
+    return <LoadingScreen message="Verifying secure session…" />;
   }
 
   // Not authenticated -> redirect to login

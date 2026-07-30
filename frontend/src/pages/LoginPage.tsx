@@ -13,7 +13,8 @@ export default function LoginPage() {
       setFormError(undefined);
       await auth.login(credentials.email, credentials.password);
       navigate('/', { replace: true });
-    } catch (error) {
+    } catch (_error) {
+      void _error;
       setFormError('Unable to sign in. Please check your credentials and try again.');
     }
   };
