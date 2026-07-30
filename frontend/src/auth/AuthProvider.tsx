@@ -1,28 +1,10 @@
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { fetchProfile, login as performLogin, logout as performLogout, refreshSession } from '../api/auth';
 import { clearAuthTokens, getStoredRefreshToken, setAccessToken, setStoredRefreshToken } from '../api/axios';
 import type { AuthUser } from '../api/auth';
+import AuthContext from './authContext';
 import logger from '../lib/logger';
-
-interface AuthContextValue {
-  user: AuthUser | null;
-  loading: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  hasPermission: (permission?: string) => boolean;
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -134,13 +116,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuthContext() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within AuthProvider');
-  }
-
-  return context;
 }

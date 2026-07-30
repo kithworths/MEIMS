@@ -1,4 +1,4 @@
-import { useAuthContext } from './AuthProvider';
+import { useAuthContext } from './authContext';
 
 export default function useAuth() {
   return useAuthContext();

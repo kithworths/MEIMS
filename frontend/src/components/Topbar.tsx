@@ -16,7 +16,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useEffect, useState, type MouseEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useThemeMode } from '../lib/theme';
+import { useThemeMode } from '../lib/themeContext';
 import useAuth from '../auth/useAuth';
 
 interface TopbarProps {

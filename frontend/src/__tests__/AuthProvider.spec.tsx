@@ -10,7 +10,8 @@ vi.mock('../api/auth', () => ({
 }));
 
 import { refreshSession, fetchProfile } from '../api/auth';
-import { AuthProvider, useAuthContext } from '../auth/AuthProvider';
+import { AuthProvider } from '../auth/AuthProvider';
+import { useAuthContext } from '../auth/authContext';
 
 function ProfileConsumer() {
   const auth = useAuthContext();

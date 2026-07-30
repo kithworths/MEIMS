@@ -1,24 +1,10 @@
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 
-interface ThemeContextValue {
-  mode: 'light' | 'dark';
-  toggleTheme: () => void;
-}
+import ThemeModeContext from './themeContext';
 
-const ThemeModeContext = createContext<ThemeContextValue | undefined>(undefined);
-
-export function useThemeMode() {
-  const context = useContext(ThemeModeContext);
-  if (!context) {
-    throw new Error('useThemeMode must be used within ThemeProvider');
-  }
-  return context;
-}
-
-export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<'light' | 'dark'>(() => {
+export default function ThemeProvider({ children }: { children: ReactNode }) {  const [mode, setMode] = useState<'light' | 'dark'>(() => {
     try {
       const stored = window.localStorage.getItem('meims_theme_mode');
       return stored === 'dark' ? 'dark' : 'light';
