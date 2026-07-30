@@ -1,21 +1,34 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import LoginForm from '../components/LoginForm';
 import useAuth from '../auth/useAuth';
 
 export default function LoginPage() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [formError, setFormError] = useState<string | string[]>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/';
+
+  useEffect(() => {
+    if (!auth.loading && auth.isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [auth.loading, auth.isAuthenticated, from, navigate]);
 
   const handleLogin = async (credentials: { email: string; password: string }) => {
+    setIsSubmitting(true);
     try {
       setFormError(undefined);
       await auth.login(credentials.email, credentials.password);
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     } catch (_error) {
       void _error;
       setFormError('Unable to sign in. Please check your credentials and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -32,7 +45,7 @@ export default function LoginPage() {
           </div>
         </header>
 
-        <LoginForm onSubmit={handleLogin} loading={auth.loading} errors={formError} />
+        <LoginForm onSubmit={handleLogin} loading={isSubmitting || auth.loading} errors={formError} />
 
         <div className="page-actions">
           <Link to="/forgot-password" className="secondary-button">

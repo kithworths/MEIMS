@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import ServerErrorPage from './pages/ServerErrorPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
             <Route
               path="/users"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredPermission="authorization.view_role">
                   <Layout>
                     <UsersPage />
                   </Layout>
@@ -54,6 +55,7 @@ function App() {
               }
             />
             <Route path="/404" element={<NotFoundPage />} />
+            <Route path="/500" element={<ServerErrorPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </ErrorBoundary>
