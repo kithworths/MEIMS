@@ -7,6 +7,8 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import './App.css';
+import Layout from './components/Layout';
+import UsersPage from './pages/UsersPage';
 
 function App() {
   return (
@@ -21,7 +23,20 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                {/* Layout wraps protected application pages */}
+                <Layout>
+                  <DashboardPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute requiredPermission="users.view">
+                <Layout>
+                  <UsersPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
