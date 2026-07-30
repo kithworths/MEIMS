@@ -1,0 +1,15 @@
+# Django logs
+backend/config/logs/
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+.env
+
+# Node
+node_modules/
+dist/
