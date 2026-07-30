@@ -68,3 +68,13 @@ coverage/
 # OS
 Thumbs.db
 
+# Automatically created by ruff.
+*
+# Created by pytest automatically.
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+backend/logs/
+
+# Environment
+*.env
+
