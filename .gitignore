@@ -8,7 +8,9 @@ __pycache__/
 
 # Virtual environments
 .venv/
-.env
+.venv*/
+venv/
+env/
 
 # Node
 node_modules/
@@ -48,6 +50,7 @@ staticfiles/
 .pytest_cache/
 .mypy_cache/
 .coverage
+coverage_report.txt
 htmlcov/
 
 venv/
