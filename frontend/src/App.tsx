@@ -14,6 +14,9 @@ import DepartmentFormPage from './pages/DepartmentFormPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import ProjectFormPage from './pages/ProjectFormPage';
+import TasksPage from './pages/TasksPage';
+import TaskDetailsPage from './pages/TaskDetailsPage';
+import TaskFormPage from './pages/TaskFormPage';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -128,6 +131,66 @@ function App() {
                 <ProtectedRoute requiredPermission="projects.Read">
                   <Layout>
                     <ProjectDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TasksPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/:type/new"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TaskFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/:type/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TaskFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TaskFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/:type/:id"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TaskDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/:id"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TaskDetailsPage />
                   </Layout>
                 </ProtectedRoute>
               }

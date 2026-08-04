@@ -29,6 +29,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, to: '/' },
   { label: 'Projects', icon: <ApartmentIcon />, to: '/projects', permission: 'projects.Read' },
+  { label: 'Tasks', icon: <ApartmentIcon />, to: '/tasks' },
   { label: 'Departments', icon: <ApartmentIcon />, to: '/departments', permission: 'departments.Read' },
   { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.view_role' },
   { label: 'Profile', icon: <SettingsIcon />, to: '/profile' },
