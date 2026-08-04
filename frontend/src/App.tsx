@@ -11,6 +11,9 @@ import Layout from './components/Layout';
 import DepartmentsPage from './pages/DepartmentsPage';
 import DepartmentDetailsPage from './pages/DepartmentDetailsPage';
 import DepartmentFormPage from './pages/DepartmentFormPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
+import ProjectFormPage from './pages/ProjectFormPage';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -83,6 +86,48 @@ function App() {
                 <ProtectedRoute requiredPermission="departments.Read">
                   <Layout>
                     <DepartmentDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Projects module routes */}
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute requiredPermission="projects.Read">
+                  <Layout>
+                    <ProjectsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/new"
+              element={
+                <ProtectedRoute requiredPermission="projects.Create">
+                  <Layout>
+                    <ProjectFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:id/edit"
+              element={
+                <ProtectedRoute requiredPermission="projects.Update">
+                  <Layout>
+                    <ProjectFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:id"
+              element={
+                <ProtectedRoute requiredPermission="projects.Read">
+                  <Layout>
+                    <ProjectDetailsPage />
                   </Layout>
                 </ProtectedRoute>
               }
