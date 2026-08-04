@@ -21,5 +21,5 @@ router.register(r'site-visits', SiteVisitViewSet, basename='sitevisit')
 router.register(r'site-inspections', SiteInspectionViewSet, basename='siteinspection')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
+    path('', include(router.urls)),
 ]

@@ -19,7 +19,15 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('apps.api.urls')),
+    path('api/v1/', include('apps.api.urls')),
+    path('api/v1/', include('apps.departments.urls')),
+    path('api/v1/', include('apps.authorization.urls')),
+    path('api/v1/', include('apps.stands.urls')),
+    path('api/v1/', include('apps.tasks.urls')),
+    path('api/v1/', include('apps.finance.urls')),
+    path('api/v1/', include('apps.documents.urls')),
+    path('api/v1/', include('apps.gis.urls')),
+    path('api/', include(('apps.api.urls', 'api'), namespace='api_legacy')),
     path('api/', include('apps.departments.urls')),
     path('api/', include('apps.authorization.urls')),
     path('api/', include('apps.stands.urls')),

@@ -9,5 +9,5 @@ router.register(r'payment-allocations', PaymentAllocationViewSet, basename='paym
 router.register(r'payment-receipts', PaymentReceiptViewSet, basename='paymentreceipt')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
+    path('', include(router.urls)),
 ]

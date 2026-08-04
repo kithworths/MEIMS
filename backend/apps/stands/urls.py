@@ -10,5 +10,5 @@ router.register(r'stands', StandViewSet, basename='stand')
 router.register(r'stage-history', StageHistoryViewSet, basename='stagehistory')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
+    path('', include(router.urls)),
 ]

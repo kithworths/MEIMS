@@ -7,5 +7,5 @@ router = DefaultRouter()
 router.register(r'gis-locations', GISLocationViewSet, basename='gislocation')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
+    path('', include(router.urls)),
 ]

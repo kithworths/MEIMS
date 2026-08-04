@@ -17,5 +17,5 @@ router.register(r'plans', PlanViewSet, basename='plan')
 router.register(r'plan-versions', PlanVersionViewSet, basename='planversion')
 
 urlpatterns = [
-    path('v1/', include(router.urls)),
+    path('', include(router.urls)),
 ]

@@ -45,7 +45,7 @@ export interface DashboardStats {
 export async function fetchDashboardStats(): Promise<DashboardStats> {
   const [healthRes, departmentsRes, projectsRes, documentsRes, paymentsRes, gisRes, rolesRes, tasksRes] =
     await Promise.all([
-      api.get('v1/health/'),
+      api.get('health/'),
       api.get('departments/'),
       api.get('projects/'),
       api.get('documents/'),
@@ -54,7 +54,6 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
       api.get('roles/'),
       api.get('project-tasks/', { params: { page_size: 1 } }),
     ]);
-
   return {
     healthMessage: healthRes.data?.message ?? 'Healthy',
     departments: getCount(departmentsRes.data),

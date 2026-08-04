@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import useAuth from '../auth/useAuth';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 
-const HEALTH_ENDPOINT = `${(import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '')}/v1/health/`;
+const HEALTH_ENDPOINT = `${(import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/$/, '')}/health/`;
 
 export default function DashboardPage() {
   const auth = useAuth();

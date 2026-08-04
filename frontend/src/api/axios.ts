@@ -6,7 +6,7 @@
 
 import logger from '../lib/logger';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/$/, '');
 const REFRESH_TOKEN_KEY = 'meims_refresh_token';
 
 let accessToken: string | null = null;
@@ -72,7 +72,7 @@ async function refreshAccessToken(): Promise<string> {
     try {
       // Use raw axios to avoid interceptors
       logger.debug('Refreshing access token');
-      const response = await axios.post(`${BASE_URL}/v1/auth/refresh/`, {
+      const response = await axios.post(`${BASE_URL}/auth/refresh/`, {
         refresh: refreshToken,
       });
 
