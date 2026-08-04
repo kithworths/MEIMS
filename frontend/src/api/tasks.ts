@@ -9,14 +9,125 @@ export interface PagedResponse<T> {
 
 export interface Stand {
   id: string;
+  project: string;
   code: string;
   name: string;
+  description?: string;
+  stand_type?: string;
+  current_stage?: string | null;
+  gis_location_id?: string | null;
+  address?: string;
+  area_sq_m?: string | number | null;
+  status: string;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface StandStage {
   id: string;
   code: string;
   name: string;
+  description?: string;
+  ordinal: number;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StandStageTransition {
+  id: string;
+  from_stage: string;
+  to_stage: string;
+  requires_approval: boolean;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StageHistory {
+  id: string;
+  stand: string;
+  from_stage: string;
+  to_stage: string;
+  changed_by?: string | null;
+  changed_at: string;
+  reason?: string;
+  is_override: boolean;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StandCreatePayload {
+  project: string;
+  code: string;
+  name: string;
+  description?: string;
+  stand_type?: string;
+  current_stage?: string | null;
+  gis_location_id?: string | null;
+  address?: string;
+  area_sq_m?: string | number | null;
+  status?: string;
+  is_active?: boolean;
+}
+
+export interface StandUpdatePayload {
+  project?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  stand_type?: string;
+  current_stage?: string | null;
+  gis_location_id?: string | null;
+  address?: string;
+  area_sq_m?: string | number | null;
+  status?: string;
+  is_active?: boolean;
+}
+
+export interface StandStageCreatePayload {
+  code: string;
+  name: string;
+  description?: string;
+  ordinal?: number;
+  is_active?: boolean;
+}
+
+export interface StandStageUpdatePayload {
+  code?: string;
+  name?: string;
+  description?: string;
+  ordinal?: number;
+  is_active?: boolean;
+}
+
+export interface StandStageTransitionCreatePayload {
+  from_stage: string;
+  to_stage: string;
+  requires_approval?: boolean;
+  is_active?: boolean;
+}
+
+export interface StandStageTransitionUpdatePayload {
+  from_stage?: string;
+  to_stage?: string;
+  requires_approval?: boolean;
+  is_active?: boolean;
+}
+
+export interface StageHistoryCreatePayload {
+  stand: string;
+  from_stage: string;
+  to_stage: string;
+  is_override?: boolean;
+  reason?: string;
+  is_active?: boolean;
 }
 
 export interface ProjectTask {
@@ -448,11 +559,13 @@ export async function getEngineerTicketHistories(params: { page?: number; pageSi
   return response.data;
 }
 
-export async function getStands(params: { page?: number; pageSize?: number; search?: string } = {}) {
+export async function getStands(params: { page?: number; pageSize?: number; search?: string; status?: string; ordering?: string } = {}) {
   const queryParams: Record<string, string | number | boolean> = {};
   if (params.pageSize) queryParams.page_size = params.pageSize;
   if (params.page && params.page > 1) queryParams.offset = (params.page - 1) * (params.pageSize ?? 20);
   if (params.search) queryParams.search = params.search;
+  if (params.status) queryParams.status = params.status;
+  if (params.ordering) queryParams.ordering = params.ordering;
   const response = await api.get<PagedResponse<Stand>>('stands/', { params: queryParams });
   return response.data;
 }
@@ -463,5 +576,102 @@ export async function getStandStages(params: { page?: number; pageSize?: number;
   if (params.page && params.page > 1) queryParams.offset = (params.page - 1) * (params.pageSize ?? 20);
   if (params.search) queryParams.search = params.search;
   const response = await api.get<PagedResponse<StandStage>>('stand-stages/', { params: queryParams });
+  return response.data;
+}
+
+export async function createStandStage(payload: StandStageCreatePayload) {
+  const response = await api.post<StandStage>('stand-stages/', payload);
+  return response.data;
+}
+
+export async function updateStandStage(id: string, payload: StandStageUpdatePayload) {
+  const response = await api.patch<StandStage>(`stand-stages/${id}/`, payload);
+  return response.data;
+}
+
+export async function deleteStandStage(id: string) {
+  await api.delete(`stand-stages/${id}/`);
+}
+
+export async function getStand(id: string) {
+  const response = await api.get<Stand>(`stands/${id}/`);
+  return response.data;
+}
+
+export async function createStand(payload: StandCreatePayload) {
+  const response = await api.post<Stand>('stands/', payload);
+  return response.data;
+}
+
+export async function updateStand(id: string, payload: StandUpdatePayload) {
+  const response = await api.patch<Stand>(`stands/${id}/`, payload);
+  return response.data;
+}
+
+export async function deleteStand(id: string) {
+  await api.delete(`stands/${id}/`);
+}
+
+export async function getStandStageTransitions(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  fromStage?: string;
+  toStage?: string;
+  requiresApproval?: boolean;
+  isActive?: boolean;
+  ordering?: string;
+} = {}) {
+  const queryParams: Record<string, string | number | boolean> = {};
+  if (params.pageSize) queryParams.page_size = params.pageSize;
+  if (params.page && params.page > 1) queryParams.offset = (params.page - 1) * (params.pageSize ?? 20);
+  if (params.search) queryParams.search = params.search;
+  if (params.fromStage) queryParams.from_stage = params.fromStage;
+  if (params.toStage) queryParams.to_stage = params.toStage;
+  if (typeof params.requiresApproval === 'boolean') queryParams.requires_approval = params.requiresApproval;
+  if (typeof params.isActive === 'boolean') queryParams.is_active = params.isActive;
+  if (params.ordering) queryParams.ordering = params.ordering;
+  const response = await api.get<PagedResponse<StandStageTransition>>('stand-stage-transitions/', { params: queryParams });
+  return response.data;
+}
+
+export async function getStandStageTransition(id: string) {
+  const response = await api.get<StandStageTransition>(`stand-stage-transitions/${id}/`);
+  return response.data;
+}
+
+export async function createStandStageTransition(payload: StandStageTransitionCreatePayload) {
+  const response = await api.post<StandStageTransition>('stand-stage-transitions/', payload);
+  return response.data;
+}
+
+export async function updateStandStageTransition(id: string, payload: StandStageTransitionUpdatePayload) {
+  const response = await api.patch<StandStageTransition>(`stand-stage-transitions/${id}/`, payload);
+  return response.data;
+}
+
+export async function deleteStandStageTransition(id: string) {
+  await api.delete(`stand-stage-transitions/${id}/`);
+}
+
+export async function getStageHistories(params: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  stand?: string;
+  ordering?: string;
+} = {}) {
+  const queryParams: Record<string, string | number | boolean> = {};
+  if (params.pageSize) queryParams.page_size = params.pageSize;
+  if (params.page && params.page > 1) queryParams.offset = (params.page - 1) * (params.pageSize ?? 20);
+  if (params.search) queryParams.search = params.search;
+  if (params.stand) queryParams.stand = params.stand;
+  if (params.ordering) queryParams.ordering = params.ordering;
+  const response = await api.get<PagedResponse<StageHistory>>('stage-history/', { params: queryParams });
+  return response.data;
+}
+
+export async function createStageHistory(payload: StageHistoryCreatePayload) {
+  const response = await api.post<StageHistory>('stage-history/', payload);
   return response.data;
 }

@@ -567,11 +567,11 @@ export function useTasksDashboard() {
   });
 }
 
-export function useStands(options: { page?: number; pageSize?: number; search?: string } = {}) {
-  const { page = 1, pageSize = 20, search } = options;
+export function useStands(options: { page?: number; pageSize?: number; search?: string; status?: string; ordering?: string } = {}) {
+  const { page = 1, pageSize = 20, search, status, ordering } = options;
   return useQuery<tasksApi.PagedResponse<tasksApi.Stand>, Error, tasksApi.PagedResponse<tasksApi.Stand>>({
-    queryKey: ['stands', page, pageSize, search],
-    queryFn: () => tasksApi.getStands({ page, pageSize, search }),
+    queryKey: ['stands', page, pageSize, search, status, ordering],
+    queryFn: () => tasksApi.getStands({ page, pageSize, search, status, ordering }),
     staleTime: 1000 * 60 * 5,
     retry: 1,
   });
@@ -584,5 +584,221 @@ export function useStandStages(options: { page?: number; pageSize?: number; sear
     queryFn: () => tasksApi.getStandStages({ page, pageSize, search }),
     staleTime: 1000 * 60 * 5,
     retry: 1,
+  });
+}
+
+export function useStand(id?: string) {
+  return useQuery<tasksApi.Stand, Error, tasksApi.Stand>({
+    queryKey: ['stand', id],
+    queryFn: async () => {
+      if (!id) throw new Error('Stand ID is required');
+      return tasksApi.getStand(id);
+    },
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+}
+
+export function useCreateStand() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.Stand, Error, tasksApi.StandCreatePayload>({
+    mutationFn: tasksApi.createStand,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+}
+
+export function useUpdateStand() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.Stand, Error, { id: string; payload: tasksApi.StandUpdatePayload }>({
+    mutationFn: ({ id, payload }) => tasksApi.updateStand(id, payload),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+      queryClient.invalidateQueries({ queryKey: ['stand', variables.id] });
+    },
+  });
+}
+
+export function useDeleteStand() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string, { previousData: unknown }>({
+    mutationFn: tasksApi.deleteStand,
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['stands'], exact: false });
+      const previousData = queryClient.getQueriesData({ queryKey: ['stands'], exact: false });
+      queryClient.setQueriesData({ queryKey: ['stands'], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData.results)) return oldData;
+        const filteredResults = oldData.results.filter((item: tasksApi.Stand) => item.id !== id);
+        const count = typeof oldData.count === 'number' ? Math.max(0, oldData.count - 1) : filteredResults.length;
+        return { ...oldData, count, results: filteredResults };
+      });
+      return { previousData };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousData) {
+        try {
+          const previous = context.previousData as any[];
+          previous.forEach(([queryKey, data]: [unknown, unknown]) => {
+            queryClient.setQueryData(queryKey as any, data);
+          });
+        } catch (_e) {
+          // ignore
+        }
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+}
+
+export function useStandStageTransitions(options: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  fromStage?: string;
+  toStage?: string;
+  requiresApproval?: boolean;
+  isActive?: boolean;
+  ordering?: string;
+} = {}) {
+  const { page = 1, pageSize = 20, search, fromStage, toStage, requiresApproval, isActive, ordering } = options;
+  return useQuery<tasksApi.PagedResponse<tasksApi.StandStageTransition>, Error, tasksApi.PagedResponse<tasksApi.StandStageTransition>>({
+    queryKey: ['standStageTransitions', page, pageSize, search, fromStage, toStage, requiresApproval, isActive, ordering],
+    queryFn: () => tasksApi.getStandStageTransitions({ page, pageSize, search, fromStage, toStage, requiresApproval, isActive, ordering }),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+}
+
+export function useCreateStandStage() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.StandStage, Error, tasksApi.StandStageCreatePayload>({
+    mutationFn: tasksApi.createStandStage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStages'] });
+    },
+  });
+}
+
+export function useUpdateStandStage() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.StandStage, Error, { id: string; payload: tasksApi.StandStageUpdatePayload }>({
+    mutationFn: ({ id, payload }) => tasksApi.updateStandStage(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStages'] });
+    },
+  });
+}
+
+export function useDeleteStandStage() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string, { previousData: unknown }>({
+    mutationFn: tasksApi.deleteStandStage,
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['standStages'], exact: false });
+      const previousData = queryClient.getQueriesData({ queryKey: ['standStages'], exact: false });
+      queryClient.setQueriesData({ queryKey: ['standStages'], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData.results)) return oldData;
+        const filteredResults = oldData.results.filter((item: tasksApi.StandStage) => item.id !== id);
+        const count = typeof oldData.count === 'number' ? Math.max(0, oldData.count - 1) : filteredResults.length;
+        return { ...oldData, count, results: filteredResults };
+      });
+      return { previousData };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousData) {
+        try {
+          const previous = context.previousData as any[];
+          previous.forEach(([queryKey, data]: [unknown, unknown]) => {
+            queryClient.setQueryData(queryKey as any, data);
+          });
+        } catch (_e) {
+          // ignore
+        }
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStages'] });
+    },
+  });
+}
+
+export function useCreateStandStageTransition() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.StandStageTransition, Error, tasksApi.StandStageTransitionCreatePayload>({
+    mutationFn: tasksApi.createStandStageTransition,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStageTransitions'] });
+    },
+  });
+}
+
+export function useUpdateStandStageTransition() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.StandStageTransition, Error, { id: string; payload: tasksApi.StandStageTransitionUpdatePayload }>({
+    mutationFn: ({ id, payload }) => tasksApi.updateStandStageTransition(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStageTransitions'] });
+    },
+  });
+}
+
+export function useDeleteStandStageTransition() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string, { previousData: unknown }>({
+    mutationFn: tasksApi.deleteStandStageTransition,
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['standStageTransitions'], exact: false });
+      const previousData = queryClient.getQueriesData({ queryKey: ['standStageTransitions'], exact: false });
+      queryClient.setQueriesData({ queryKey: ['standStageTransitions'], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData.results)) return oldData;
+        const filteredResults = oldData.results.filter((item: tasksApi.StandStageTransition) => item.id !== id);
+        const count = typeof oldData.count === 'number' ? Math.max(0, oldData.count - 1) : filteredResults.length;
+        return { ...oldData, count, results: filteredResults };
+      });
+      return { previousData };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousData) {
+        try {
+          const previous = context.previousData as any[];
+          previous.forEach(([queryKey, data]: [unknown, unknown]) => {
+            queryClient.setQueryData(queryKey as any, data);
+          });
+        } catch (_e) {
+          // ignore
+        }
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['standStageTransitions'] });
+    },
+  });
+}
+
+export function useStageHistories(standId?: string) {
+  return useQuery<tasksApi.PagedResponse<tasksApi.StageHistory>, Error, tasksApi.PagedResponse<tasksApi.StageHistory>>({
+    queryKey: ['stageHistories', standId],
+    queryFn: async () => {
+      if (!standId) throw new Error('Stand ID is required');
+      return tasksApi.getStageHistories({ page: 1, pageSize: 20, stand: standId });
+    },
+    enabled: Boolean(standId),
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
+}
+
+export function useCreateStageHistory() {
+  const queryClient = useQueryClient();
+  return useMutation<tasksApi.StageHistory, Error, tasksApi.StageHistoryCreatePayload>({
+    mutationFn: tasksApi.createStageHistory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stageHistories'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
   });
 }

@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import ApartmentIcon from '@mui/icons-material/Apartment';
+import FlagIcon from '@mui/icons-material/Flag';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -29,6 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, to: '/' },
   { label: 'Projects', icon: <ApartmentIcon />, to: '/projects', permission: 'projects.Read' },
+  { label: 'Stands', icon: <FlagIcon />, to: '/stands', permission: 'stands.Read' },
   { label: 'Tasks', icon: <ApartmentIcon />, to: '/tasks' },
   { label: 'Departments', icon: <ApartmentIcon />, to: '/departments', permission: 'departments.Read' },
   { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.view_role' },

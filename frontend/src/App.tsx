@@ -17,6 +17,9 @@ import ProjectFormPage from './pages/ProjectFormPage';
 import TasksPage from './pages/TasksPage';
 import TaskDetailsPage from './pages/TaskDetailsPage';
 import TaskFormPage from './pages/TaskFormPage';
+import StandsPage from './pages/StandsPage';
+import StandFormPage from './pages/StandFormPage';
+import StandDetailsPage from './pages/StandDetailsPage';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -131,6 +134,46 @@ function App() {
                 <ProtectedRoute requiredPermission="projects.Read">
                   <Layout>
                     <ProjectDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stands"
+              element={
+                <ProtectedRoute requiredPermission="stands.Read">
+                  <Layout>
+                    <StandsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stands/new"
+              element={
+                <ProtectedRoute requiredPermission="stands.Create">
+                  <Layout>
+                    <StandFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stands/:id/edit"
+              element={
+                <ProtectedRoute requiredPermission="stands.Update">
+                  <Layout>
+                    <StandFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stands/:id"
+              element={
+                <ProtectedRoute requiredPermission="stands.Read">
+                  <Layout>
+                    <StandDetailsPage />
                   </Layout>
                 </ProtectedRoute>
               }

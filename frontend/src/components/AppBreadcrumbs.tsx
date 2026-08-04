@@ -10,6 +10,7 @@ const labelMap: Record<string, string> = {
   departments: 'Departments',
   projects: 'Projects',
   tasks: 'Tasks',
+  stands: 'Stands',
   finance: 'Finance',
   gis: 'GIS',
   settings: 'Settings',
