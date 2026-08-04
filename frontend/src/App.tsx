@@ -8,6 +8,9 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 import './App.css';
 import Layout from './components/Layout';
+import DepartmentsPage from './pages/DepartmentsPage';
+import DepartmentDetailsPage from './pages/DepartmentDetailsPage';
+import DepartmentFormPage from './pages/DepartmentFormPage';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -40,6 +43,46 @@ function App() {
                 <ProtectedRoute requiredPermission="authorization.view_role">
                   <Layout>
                     <UsersPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments"
+              element={
+                <ProtectedRoute requiredPermission="departments.Read">
+                  <Layout>
+                    <DepartmentsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments/new"
+              element={
+                <ProtectedRoute requiredPermission="departments.Create">
+                  <Layout>
+                    <DepartmentFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments/:id/edit"
+              element={
+                <ProtectedRoute requiredPermission="departments.Update">
+                  <Layout>
+                    <DepartmentFormPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments/:id"
+              element={
+                <ProtectedRoute requiredPermission="departments.Read">
+                  <Layout>
+                    <DepartmentDetailsPage />
                   </Layout>
                 </ProtectedRoute>
               }
