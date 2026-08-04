@@ -76,9 +76,16 @@ async function refreshAccessToken(): Promise<string> {
         refresh: refreshToken,
       });
 
-      const newAccessToken = response.data?.data?.access;
+      const responseData = response.data?.data;
+      const newAccessToken = responseData?.access;
+      const newRefreshToken = responseData?.refresh;
+
       if (!newAccessToken) {
         throw new Error('Unable to refresh access token');
+      }
+
+      if (newRefreshToken) {
+        setStoredRefreshToken(newRefreshToken);
       }
 
       setAccessToken(newAccessToken);

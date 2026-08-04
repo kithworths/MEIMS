@@ -1,4 +1,5 @@
 import api from './axios';
+import { setStoredRefreshToken } from './axios';
 
 export interface AuthUser {
   id: string;
@@ -42,11 +43,16 @@ export async function refreshSession(): Promise<string> {
     throw new Error('Missing refresh token');
   }
 
-  const response = await api.post<ApiResponse<{ access: string }>>('v1/auth/refresh/', {
+  const response = await api.post<ApiResponse<{ access: string; refresh?: string }>>('v1/auth/refresh/', {
     refresh: refreshToken,
   });
 
-  return response.data.data.access;
+  const responseData = response.data.data;
+  if (responseData.refresh) {
+    setStoredRefreshToken(responseData.refresh);
+  }
+
+  return responseData.access;
 }
 
 export async function fetchProfile(): Promise<AuthUser> {

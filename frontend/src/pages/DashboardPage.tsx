@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import useAuth from '../auth/useAuth';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 
+const HEALTH_ENDPOINT = `${(import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '')}/v1/health/`;
+
 export default function DashboardPage() {
   const auth = useAuth();
   const { data, isLoading, error } = useDashboardStats();
@@ -67,7 +69,7 @@ export default function DashboardPage() {
                 Live backend health and availability summary.
               </Typography>
             </Box>
-            <Button variant="contained" href="/api/v1/health/" target="_blank">
+            <Button variant="contained" href={HEALTH_ENDPOINT} target="_blank" rel="noreferrer noopener">
               View health endpoint
             </Button>
           </Card>

@@ -601,7 +601,15 @@ class AuthRefreshView(JSONResponseMixin, TokenRefreshView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as exc:
+            return self.error_response(
+                errors={'refresh': [str(exc)]},
+                message='Invalid refresh token.',
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+
         return self.success_response(
             data=serializer.validated_data,
             message='Token refreshed successfully.',

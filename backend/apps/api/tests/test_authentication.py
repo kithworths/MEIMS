@@ -58,6 +58,16 @@ class AuthenticationTests(TestCase):
         self.assertIn('data', payload)
         self.assertEqual(payload['data']['email'], self.user_email)
 
+    def test_refresh_rejects_invalid_token(self):
+        url = reverse('api:auth-refresh')
+        resp = self.client.post(url, {'refresh': 'invalid'}, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+        payload = resp.json()
+        self.assertFalse(payload.get('success', True))
+        self.assertIn('errors', payload)
+        self.assertIn('refresh', payload['errors'])
+        self.assertIn('Invalid refresh token', payload['message'])
+
     def test_change_password(self):
         # Login
         login_url = reverse('api:auth-login')
