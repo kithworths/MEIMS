@@ -64,6 +64,30 @@ class AuditLog(models.Model):
         blank=True,
         help_text=_('Detailed description of the audited event.'),
     )
+    object_type = models.CharField(
+        _('object type'),
+        max_length=128,
+        blank=True,
+        help_text=_('The object type that was affected by the audited event.'),
+    )
+    object_id = models.CharField(
+        _('object id'),
+        max_length=128,
+        blank=True,
+        help_text=_('The identifier of the audited object.'),
+    )
+    old_value = models.JSONField(
+        _('old value'),
+        blank=True,
+        null=True,
+        help_text=_('Previous value of the audited object, when applicable.'),
+    )
+    new_value = models.JSONField(
+        _('new value'),
+        blank=True,
+        null=True,
+        help_text=_('New value of the audited object, when applicable.'),
+    )
     ip_address = models.CharField(
         _('IP address'),
         max_length=45,

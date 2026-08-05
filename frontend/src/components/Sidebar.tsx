@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import ApartmentIcon from '@mui/icons-material/Apartment';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import FlagIcon from '@mui/icons-material/Flag';
 import PersonIcon from '@mui/icons-material/Person';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -34,7 +35,8 @@ const navItems: NavItem[] = [
   { label: 'Stands', icon: <FlagIcon />, to: '/stands', permission: 'stands.Read' },
   { label: 'Tasks', icon: <ApartmentIcon />, to: '/tasks' },
   { label: 'Notifications', icon: <NotificationsIcon />, to: '/notifications', permission: 'notifications.Read' },
-  { label: 'Reports', icon: <NotificationsIcon />, to: '/reports', permission: 'reports.Read' },
+  { label: 'Reports', icon: <BarChartIcon />, to: '/reports', permission: 'reports.Read' },
+  { label: 'Audit', icon: <BarChartIcon />, to: '/audit', permission: 'audit.Read' },
   { label: 'GIS', icon: <ApartmentIcon />, to: '/gis', permission: 'gis.Read' },
   { label: 'Finance', icon: <ApartmentIcon />, to: '/finance', permission: 'payments.Read' },
   { label: 'Documents', icon: <ApartmentIcon />, to: '/documents', permission: 'documents.Read' },

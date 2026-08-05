@@ -24,6 +24,7 @@ import DocumentDetailsPage from './pages/DocumentDetailsPage';
 import GISPage from './pages/GISPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ReportsPage from './pages/ReportsPage';
+import AuditPage from './pages/AuditPage';
 import TasksPage from './pages/TasksPage';
 import TaskDetailsPage from './pages/TaskDetailsPage';
 import TaskFormPage from './pages/TaskFormPage';
@@ -204,6 +205,16 @@ function App() {
                 <ProtectedRoute requiredPermission="reports.Read">
                   <Layout>
                     <ReportsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit"
+              element={
+                <ProtectedRoute requiredPermission="audit.Read">
+                  <Layout>
+                    <AuditPage />
                   </Layout>
                 </ProtectedRoute>
               }
