@@ -14,18 +14,6 @@ import Divider from '@mui/material/Divider';
 import useAuth from '../auth/useAuth';
 import { useAudit, useAuditSummary, useExportAuditLogs } from '../hooks/useAudit';
 
-const ACTION_OPTIONS = [
-  'Create',
-  'Read',
-  'Update',
-  'Delete',
-  'Approve',
-  'Export',
-  'Print',
-  'Assign',
-  'Login',
-  'Logout',
-];
 
 export default function AuditPage() {
   const auth = useAuth();
@@ -125,7 +113,7 @@ export default function AuditPage() {
               <Button variant="contained" onClick={() => refetch()} disabled={isLoading}>
                 Apply
               </Button>
-              <Button variant="outlined" onClick={handleExport} disabled={exportMutation.isLoading || !auth.hasPermission('audit.Export')}>
+              <Button variant="outlined" onClick={handleExport} disabled={(exportMutation?.status === 'pending') || !auth.hasPermission('audit.Export')}>
                 Export CSV
               </Button>
             </Box>

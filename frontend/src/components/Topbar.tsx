@@ -11,13 +11,14 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useEffect, useState, type MouseEvent } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../lib/themeContext';
 import useAuth from '../auth/useAuth';
+import { useRecentNotifications, useUnreadNotificationCount } from '../hooks/useNotifications';
 
 interface TopbarProps {
   onToggleDrawer?: () => void;
@@ -29,6 +30,12 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
   const navigate = useNavigate();
   const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
+
+  const { data: unreadCountData } = useUnreadNotificationCount();
+  const { data: latestNotificationsData } = useRecentNotifications();
+
+  const unreadCount = unreadCountData ?? 0;
+  const latestNotifications = latestNotificationsData?.results ?? [];
 
   useEffect(() => {
     document.title = 'MEIMS — Management Portal';
@@ -45,11 +52,15 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
     navigate('/login', { replace: true });
   };
 
-  const notificationItems = [
-    'System health is stable.',
-    'New role assignments are available.',
-    'Your password expires in 30 days.',
-  ];
+  const notificationItems: Array<{
+    id: string;
+    title: string;
+    message?: string | null;
+  }> = latestNotifications.length
+    ? latestNotifications.map((item) => ({ id: item.id, title: item.title, message: item.message }))
+    : [
+        { id: 'empty', title: 'No notifications yet', message: 'You are all caught up.' },
+      ];
 
   return (
     <AppBar position="sticky" color="primary" elevation={2}>
@@ -65,11 +76,13 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
           <IconButton color="inherit" onClick={toggleTheme} aria-label="toggle theme">
             {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
-          <IconButton color="inherit" onClick={openNotifications} aria-label="notifications">
-            <Badge badgeContent={notificationItems.length} color="secondary">
-              <NotificationsNoneIcon />
-            </Badge>
-          </IconButton>
+          {auth.hasPermission('notifications.Read') && (
+            <IconButton color="inherit" onClick={openNotifications} aria-label={`notifications (${unreadCount} unread)`}>
+              <Badge badgeContent={unreadCount} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          )}
           <IconButton color="inherit" onClick={openProfileMenu} aria-label="account">
             <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', fontSize: 14 }}>
               {auth.user?.first_name?.charAt(0) ?? auth.user?.email?.charAt(0) ?? 'U'}
@@ -79,10 +92,28 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
 
         <Menu anchorEl={notificationsAnchor} open={Boolean(notificationsAnchor)} onClose={closeNotifications}>
           {notificationItems.map((item) => (
-            <MenuItem key={item} onClick={closeNotifications}>
-              <Typography variant="body2">{item}</Typography>
+            <MenuItem
+              key={item.id ?? item.title}
+              onClick={() => {
+                closeNotifications();
+                navigate('/notifications');
+              }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Typography variant="body2" sx={{ fontWeight: item.id !== 'empty' ? 700 : 600 }}>
+                  {item.title}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {item.message ?? 'Open notification center to manage alerts.'}
+                </Typography>
+              </Box>
             </MenuItem>
           ))}
+          {auth.hasPermission('notifications.Read') && (
+            <MenuItem component={RouterLink} to="/notifications" onClick={closeNotifications}>
+              View all notifications
+            </MenuItem>
+          )}
         </Menu>
 
         <Menu anchorEl={profileAnchor} open={Boolean(profileAnchor)} onClose={closeProfileMenu}>

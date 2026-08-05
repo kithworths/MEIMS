@@ -23,6 +23,7 @@ class Command(BaseCommand):
         'payments',
         'paymentreceipts',
         'reports',
+        'audit',
         'documents',
         'attachments',
         'plans',

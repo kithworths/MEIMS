@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as auditApi from '../api/audit';
 
 export interface AuditQueryOptions {
@@ -11,35 +11,33 @@ export interface AuditQueryOptions {
   role?: string;
 }
 
-export function useAudit(options: AuditQueryOptions = {}): UseQueryResult<any, Error> {
+export function useAudit(options: AuditQueryOptions = {}) {
   const { page = 1, pageSize = 20, search, ordering, start_date, end_date, role } = options;
-  return useQuery<any, Error>(
-    ['audit', page, pageSize, search, ordering, start_date, end_date, role],
-    () => auditApi.listAuditLogs({ page, pageSize, search, ordering, start_date, end_date, role }),
-    {
-      staleTime: 1000 * 60,
-      retry: 1,
-    }
-  );
+
+  return useQuery<any, Error>({
+    queryKey: ['audit', page, pageSize, search, ordering, start_date, end_date, role],
+    queryFn: () => auditApi.listAuditLogs({ page, pageSize, search, ordering, start_date, end_date, role }),
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
 }
 
-export function useAuditSummary(options: AuditQueryOptions = {}): UseQueryResult<any, Error> {
+export function useAuditSummary(options: AuditQueryOptions = {}) {
   const { start_date, end_date, search, role } = options;
-  return useQuery<any, Error>(
-    ['audit-summary', start_date, end_date, search, role],
-    () => auditApi.getAuditSummary({ start_date, end_date, search, role }),
-    {
-      staleTime: 1000 * 60,
-      retry: 1,
-    }
-  );
+
+  return useQuery<any, Error>({
+    queryKey: ['audit-summary', start_date, end_date, search, role],
+    queryFn: () => auditApi.getAuditSummary({ start_date, end_date, search, role }),
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
 }
 
-export function useExportAuditLogs(): UseMutationResult<any, Error, AuditQueryOptions, unknown> {
+export function useExportAuditLogs() {
   const qc = useQueryClient();
 
-  return useMutation<any, Error, AuditQueryOptions, unknown>({
-    mutationFn: (params) => auditApi.exportAuditLogs(params),
+  return useMutation({
+    mutationFn: (params: AuditQueryOptions) => auditApi.exportAuditLogs(params),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['audit'] }),
   });
 }

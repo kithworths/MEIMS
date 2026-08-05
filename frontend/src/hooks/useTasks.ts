@@ -527,6 +527,15 @@ export function useTaskHistories(taskId?: string) {
   });
 }
 
+export function usePendingStandApprovals() {
+  return useQuery<tasksApi.PagedResponse<tasksApi.StandStageTransition>, Error>({
+    queryKey: ['standStageTransitions', 'requiresApproval', true],
+    queryFn: () => tasksApi.getStandStageTransitions({ page: 1, pageSize: 5, requiresApproval: true, ordering: '-created_at' }),
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
+}
+
 export function useEngineerTicketHistories(ticketId?: string) {
   return useQuery<tasksApi.PagedResponse<tasksApi.EngineerTicketHistory>, Error, tasksApi.PagedResponse<tasksApi.EngineerTicketHistory>>({
     queryKey: ['engineerTicketHistories', ticketId],

@@ -17,23 +17,26 @@
     "@mui/material": "^5.15.11",
     "@tanstack/react-query": "^5.100.0",
     "axios": "^1.18.1",
+    "leaflet": "^1.9.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "axios-mock-adapter": "^1.21.2",
+    "jsdom": "^22.1.0",
     "oxlint": "^1.71.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.1",
-    "vitest": "^0.34.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/jest-dom": "^6.0.0",
-    "jsdom": "^22.1.0",
-    "axios-mock-adapter": "^1.21.2"
+    "vitest": "^0.34.0"
   },
   "vitest": {
     "test": {

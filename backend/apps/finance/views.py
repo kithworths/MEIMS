@@ -1,4 +1,9 @@
+import csv
+import io
 from decimal import Decimal
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import TruncDate
+from django.http import HttpResponse
 
 from rest_framework.decorators import action
 
@@ -53,6 +58,80 @@ class PaymentViewSet(BaseModelViewSet):
             return error_response(errors={'detail': str(exc)}, message='Could not refund payment.', status_code=400)
         serializer = PaymentSerializer(refund, context=self.get_serializer_context())
         return success_response(data=serializer.data, message='Payment refund created.', status_code=201)
+
+    @action(detail=False, methods=['get'], url_path='export-csv')
+    def export_csv(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="payments.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Reference',
+            'Payment Type',
+            'Project',
+            'Stand',
+            'Service Type',
+            'Amount',
+            'Currency',
+            'Base Amount',
+            'Status',
+            'Payment Date',
+            'External Reference',
+            'Notes',
+        ])
+
+        for payment in queryset:
+            writer.writerow([
+                payment.reference,
+                payment.payment_type,
+                payment.project_id or '',
+                payment.stand_id or '',
+                payment.service_type_id or '',
+                f'{payment.amount:.2f}',
+                payment.currency,
+                f'{payment.base_amount:.2f}',
+                payment.status,
+                payment.payment_date.isoformat(),
+                payment.external_reference,
+                payment.notes,
+            ])
+
+        return response
+
+    @action(detail=False, methods=['get'], url_path='export-excel')
+    def export_excel(self, request):
+        return self.export_csv(request)
+
+    @action(detail=False, methods=['get'], url_path='dashboard')
+    def dashboard(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        totals = queryset.aggregate(
+            total_revenue=Sum('base_amount', filter=Q(payment_type__in=[Payment.PAYMENT_PROJECT, Payment.PAYMENT_STAND, Payment.PAYMENT_SERVICE])),
+            payment_count=Count('id', filter=Q(payment_type__in=[Payment.PAYMENT_PROJECT, Payment.PAYMENT_STAND, Payment.PAYMENT_SERVICE])),
+            refund_count=Count('id', filter=Q(payment_type=Payment.PAYMENT_REFUND)),
+            reversal_count=Count('id', filter=Q(payment_type=Payment.PAYMENT_REVERSAL)),
+        )
+        daily = (
+            queryset.filter(payment_type__in=[Payment.PAYMENT_PROJECT, Payment.PAYMENT_STAND, Payment.PAYMENT_SERVICE])
+            .annotate(date=TruncDate('payment_date'))
+            .values('date')
+            .annotate(amount=Sum('base_amount'), count=Count('id'))
+            .order_by('date')
+        )
+
+        return success_response(
+            data={
+                'total_revenue': str(totals['total_revenue'] or 0),
+                'payment_count': totals['payment_count'] or 0,
+                'refund_count': totals['refund_count'] or 0,
+                'reversal_count': totals['reversal_count'] or 0,
+                'daily_revenue': [
+                    {'date': item['date'].isoformat(), 'amount': str(item['amount'] or 0), 'count': item['count']}
+                    for item in daily
+                ],
+            },
+        )
 
     @action(detail=True, methods=['post'])
     def soft_delete(self, request, pk=None):
@@ -131,6 +210,38 @@ class PaymentReceiptViewSet(BaseModelViewSet):
             return error_response(errors={'verification_hash': 'Receipt verification failed.'}, message='Verification failed.', status_code=400)
         serializer = PaymentReceiptSerializer(receipt, context=self.get_serializer_context())
         return success_response(data=serializer.data, message='Receipt verified.')
+
+    @action(detail=False, methods=['get'], url_path='export-csv')
+    def export_csv(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="payment_receipts.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Receipt Number',
+            'Payment',
+            'Issued At',
+            'Status',
+            'Verified At',
+            'Original Receipt',
+        ])
+
+        for receipt in queryset:
+            writer.writerow([
+                receipt.receipt_number,
+                receipt.payment_id,
+                receipt.issued_at.isoformat(),
+                receipt.status,
+                receipt.verified_at.isoformat() if receipt.verified_at else '',
+                receipt.original_receipt_id or '',
+            ])
+
+        return response
+
+    @action(detail=False, methods=['get'], url_path='export-excel')
+    def export_excel(self, request):
+        return self.export_csv(request)
 
     @action(detail=True, methods=['post'])
     def soft_delete(self, request, pk=None):
