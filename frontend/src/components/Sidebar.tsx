@@ -8,6 +8,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import FlagIcon from '@mui/icons-material/Flag';
 import PersonIcon from '@mui/icons-material/Person';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -32,6 +33,11 @@ const navItems: NavItem[] = [
   { label: 'Projects', icon: <ApartmentIcon />, to: '/projects', permission: 'projects.Read' },
   { label: 'Stands', icon: <FlagIcon />, to: '/stands', permission: 'stands.Read' },
   { label: 'Tasks', icon: <ApartmentIcon />, to: '/tasks' },
+  { label: 'Notifications', icon: <NotificationsIcon />, to: '/notifications', permission: 'notifications.Read' },
+  { label: 'Reports', icon: <NotificationsIcon />, to: '/reports', permission: 'reports.Read' },
+  { label: 'GIS', icon: <ApartmentIcon />, to: '/gis', permission: 'gis.Read' },
+  { label: 'Finance', icon: <ApartmentIcon />, to: '/finance', permission: 'payments.Read' },
+  { label: 'Documents', icon: <ApartmentIcon />, to: '/documents', permission: 'documents.Read' },
   { label: 'Departments', icon: <ApartmentIcon />, to: '/departments', permission: 'departments.Read' },
   { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.view_role' },
   { label: 'Profile', icon: <SettingsIcon />, to: '/profile' },

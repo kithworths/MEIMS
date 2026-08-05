@@ -14,6 +14,16 @@ import DepartmentFormPage from './pages/DepartmentFormPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import ProjectFormPage from './pages/ProjectFormPage';
+import FinancePage from './pages/FinancePage';
+import FinanceReceiptsPage from './pages/FinanceReceiptsPage';
+import FinancePaymentDetailsPage from './pages/FinancePaymentDetailsPage';
+import FinanceReceiptDetailsPage from './pages/FinanceReceiptDetailsPage';
+import FinanceAllocationsPage from './pages/FinanceAllocationsPage';
+import DocumentsPage from './pages/DocumentsPage';
+import DocumentDetailsPage from './pages/DocumentDetailsPage';
+import GISPage from './pages/GISPage';
+import NotificationsPage from './pages/NotificationsPage';
+import ReportsPage from './pages/ReportsPage';
 import TasksPage from './pages/TasksPage';
 import TaskDetailsPage from './pages/TaskDetailsPage';
 import TaskFormPage from './pages/TaskFormPage';
@@ -98,6 +108,116 @@ function App() {
             />
 
             {/* Projects module routes */}
+            <Route
+              path="/finance"
+              element={
+                <ProtectedRoute requiredPermission="payments.Read">
+                  <Layout>
+                    <FinancePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/payments"
+              element={
+                <ProtectedRoute requiredPermission="payments.Read">
+                  <Layout>
+                    <FinancePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/receipts"
+              element={
+                <ProtectedRoute requiredPermission="paymentreceipts.Read">
+                  <Layout>
+                    <FinanceReceiptsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/receipts/:id"
+              element={
+                <ProtectedRoute requiredPermission="paymentreceipts.Read">
+                  <Layout>
+                    <FinanceReceiptDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/payments/:id"
+              element={
+                <ProtectedRoute requiredPermission="payments.Read">
+                  <Layout>
+                    <FinancePaymentDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance/allocations"
+              element={
+                <ProtectedRoute requiredPermission="payments.Read">
+                  <Layout>
+                    <FinanceAllocationsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/documents"
+              element={
+                <ProtectedRoute requiredPermission="documents.Read">
+                  <Layout>
+                    <DocumentsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/documents/:id"
+              element={
+                <ProtectedRoute requiredPermission="documents.Read">
+                  <Layout>
+                    <DocumentDetailsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute requiredPermission="notifications.Read">
+                  <Layout>
+                    <NotificationsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute requiredPermission="reports.Read">
+                  <Layout>
+                    <ReportsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/gis"
+              element={
+                <ProtectedRoute requiredPermission="gis.Read">
+                  <Layout>
+                    <GISPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/projects"
               element={

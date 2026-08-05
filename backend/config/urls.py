@@ -27,6 +27,8 @@ urlpatterns = [
     path('api/v1/', include('apps.finance.urls')),
     path('api/v1/', include('apps.documents.urls')),
     path('api/v1/', include('apps.gis.urls')),
+    path('api/v1/', include('apps.notifications.urls')),
+    path('api/v1/', include('apps.reports.urls')),
     path('api/', include(('apps.api.urls', 'api'), namespace='api_legacy')),
     path('api/', include('apps.departments.urls')),
     path('api/', include('apps.authorization.urls')),
@@ -35,6 +37,8 @@ urlpatterns = [
     path('api/', include('apps.finance.urls')),
     path('api/', include('apps.documents.urls')),
     path('api/', include('apps.gis.urls')),
+    path('api/', include('apps.notifications.urls')),
+    path('api/', include('apps.reports.urls')),
 ]
 
 # Use JSON handlers for 404 and 500 so API clients get standardized error payloads
