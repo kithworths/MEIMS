@@ -9,6 +9,8 @@ from django.utils.timezone import make_aware
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from common.views import BaseModelViewSet
 
@@ -18,7 +20,7 @@ from .serializers import AuditLogSerializer
 
 
 class AuditLogViewSet(BaseModelViewSet):
-    queryset = AuditLog.objects.select_related('user').all()
+    queryset = AuditLog.objects.select_related('user').prefetch_related('user__roles').all()
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAuthenticated, AuditPermissions]
     permission_module = 'audit'
@@ -65,6 +67,7 @@ class AuditLogViewSet(BaseModelViewSet):
         return queryset.distinct()
 
     @action(detail=False, methods=['get'])
+    @method_decorator(cache_page(60 * 5))
     def export(self, request):
         export_format = request.query_params.get('export_format', 'csv').lower()
 
@@ -117,6 +120,7 @@ class AuditLogViewSet(BaseModelViewSet):
         return response
 
     @action(detail=False, methods=['get'])
+    @method_decorator(cache_page(60 * 5))
     def summary(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         action_counts = (
