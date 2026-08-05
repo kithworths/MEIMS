@@ -16,6 +16,9 @@ from .permissions import PaymentPermissions, PaymentReceiptPermissions
 from .serializers import PaymentSerializer, PaymentAllocationSerializer, PaymentReceiptSerializer
 from .services import PaymentService, PaymentReceiptService
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class PaymentViewSet(BaseModelViewSet):
     queryset = Payment.objects.select_related('project', 'stand', 'service_type').all()
@@ -103,6 +106,7 @@ class PaymentViewSet(BaseModelViewSet):
     def export_excel(self, request):
         return self.export_csv(request)
 
+    @method_decorator(cache_page(60 * 5))
     @action(detail=False, methods=['get'], url_path='dashboard')
     def dashboard(self, request):
         queryset = self.filter_queryset(self.get_queryset())

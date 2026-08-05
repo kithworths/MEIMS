@@ -8,6 +8,9 @@ from .models import Notification
 from .permissions import NotificationPermissions
 from .serializers import NotificationSerializer
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class NotificationViewSet(BaseModelViewSet):
     queryset = Notification.objects.select_related('user').all()
@@ -20,7 +23,7 @@ class NotificationViewSet(BaseModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = super().get_queryset().filter(user=user)
+        qs = super().get_queryset().filter(user=user).select_related('user')
         if self.request.query_params.get('archived') is not None:
             archived = self.request.query_params.get('archived').lower() in ['1', 'true', 'yes']
             qs = qs.filter(is_archived=archived)
@@ -32,6 +35,10 @@ class NotificationViewSet(BaseModelViewSet):
             qs = qs.filter(is_read=not unread)
 
         return qs
+
+    @method_decorator(cache_page(60 * 2))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
