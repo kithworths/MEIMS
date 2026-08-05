@@ -110,14 +110,24 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
             </MenuItem>
           ))}
           {auth.hasPermission('notifications.Read') && (
-            <MenuItem component={RouterLink} to="/notifications" onClick={closeNotifications}>
+            <MenuItem
+              onClick={() => {
+                closeNotifications();
+                navigate('/notifications');
+              }}
+            >
               View all notifications
             </MenuItem>
           )}
         </Menu>
 
         <Menu anchorEl={profileAnchor} open={Boolean(profileAnchor)} onClose={closeProfileMenu}>
-          <MenuItem component={RouterLink} to="/profile" onClick={closeProfileMenu}>
+          <MenuItem
+            onClick={() => {
+              closeProfileMenu();
+              navigate('/profile');
+            }}
+          >
             <ListItemIcon>
               <AccountCircleIcon fontSize="small" />
             </ListItemIcon>
