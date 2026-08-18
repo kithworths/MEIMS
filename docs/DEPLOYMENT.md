@@ -15,17 +15,30 @@ This guide describes production deployment of the MEIMS Django backend using Doc
 
 1. Prepare host server and install Docker Engine and Docker Compose.
 2. Copy `backend/.env.example` to `backend/.env` and set production values.
-3. Ensure `DJANGO_SETTINGS_MODULE=config.settings.production` is set in the production environment.
-4. Build the backend image:
+3. Ensure `DJANGO_SETTINGS_MODULE=config.settings.production` and `DJANGO_ENVIRONMENT=production` are set in the production environment.
+
+4. Build backend and frontend assets as part of the deployment pipeline:
+
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   ```
+
+5. Build the backend image:
+
    ```bash
    cd backend
    docker build -t meims-backend:latest .
    ```
-5. Start the production stack:
+
+6. Start the production stack:
+
    ```bash
    docker compose -f backend/docker-compose.prod.yml up -d
    ```
-6. Verify health endpoints:
+
+7. Verify health endpoints:
    - `https://<your-domain>/api/v1/health/ready/`
    - `https://<your-domain>/api/v1/health/live/`
 
@@ -36,6 +49,8 @@ The production container runs `manage.py migrate --noinput` and `manage.py colle
 ## Nginx configuration
 
 The production Nginx configuration is available at `backend/nginx/nginx.conf`. It is configured for HTTPS, HTTP/2, gzip, proxy buffering, static files, media files, health checks, and security headers.
+
+> NOTE: `backend/nginx/nginx.conf` includes placeholder TLS certificate paths. Update `ssl_certificate` and `ssl_certificate_key` to match your production certificate location before deployment.
 
 ## Rollback
 

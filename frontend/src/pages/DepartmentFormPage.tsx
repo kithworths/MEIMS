@@ -109,7 +109,7 @@ export default function DepartmentFormPage() {
         const result = await createMutation.mutateAsync(values);
         navigate(`/departments/${result.id}`);
       }
-    } catch (error) {
+    } catch {
       setFeedback('Unable to save the department. Please verify the data and try again.');
     }
   };

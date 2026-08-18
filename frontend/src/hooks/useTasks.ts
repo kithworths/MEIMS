@@ -10,14 +10,16 @@ export function useProjectTasks(options: {
   project?: string;
   assignee?: string;
   ordering?: string;
+  enabled?: boolean;
 }) {
-  const { page, pageSize, search, status, priority, project, assignee, ordering } = options;
+  const { page, pageSize, search, status, priority, project, assignee, ordering, enabled = true } = options;
 
   return useQuery<tasksApi.PagedResponse<tasksApi.ProjectTask>, Error, tasksApi.PagedResponse<tasksApi.ProjectTask>>({
     queryKey: ['projectTasks', page, pageSize, search, status, priority, project, assignee, ordering],
     queryFn: () => tasksApi.getProjectTasks({ page, pageSize, search, status, priority, project, assignee, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -80,14 +82,14 @@ export function useDeleteProjectTask() {
 
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -114,14 +116,14 @@ export function useBulkDeleteProjectTasks() {
       });
       return { previousData };
     },
-    onError: (_error, _ids, context) => {
-      if (context?.previousData) {
+    onError: (_error, _ids, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -141,14 +143,16 @@ export function useEngineerTickets(options: {
   project?: string;
   assignee?: string;
   ordering?: string;
+  enabled?: boolean;
 }) {
-  const { page, pageSize, search, status, priority, project, assignee, ordering } = options;
+  const { page, pageSize, search, status, priority, project, assignee, ordering, enabled = true } = options;
 
   return useQuery<tasksApi.PagedResponse<tasksApi.EngineerTicket>, Error, tasksApi.PagedResponse<tasksApi.EngineerTicket>>({
     queryKey: ['engineerTickets', page, pageSize, search, status, priority, project, assignee, ordering],
     queryFn: () => tasksApi.getEngineerTickets({ page, pageSize, search, status, priority, project, assignee, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -208,14 +212,14 @@ export function useDeleteEngineerTicket() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -242,14 +246,14 @@ export function useBulkDeleteEngineerTickets() {
       });
       return { previousData };
     },
-    onError: (_error, _ids, context) => {
-      if (context?.previousData) {
+    onError: (_error, _ids, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -268,14 +272,16 @@ export function useSiteVisits(options: {
   engineer?: string;
   stand?: string;
   ordering?: string;
+  enabled?: boolean;
 }) {
-  const { page, pageSize, search, status, engineer, stand, ordering } = options;
+  const { page, pageSize, search, status, engineer, stand, ordering, enabled = true } = options;
 
   return useQuery<tasksApi.PagedResponse<tasksApi.SiteVisit>, Error, tasksApi.PagedResponse<tasksApi.SiteVisit>>({
     queryKey: ['siteVisits', page, pageSize, search, status, engineer, stand, ordering],
     queryFn: () => tasksApi.getSiteVisits({ page, pageSize, search, status, engineer, stand, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -335,14 +341,14 @@ export function useDeleteSiteVisit() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -369,14 +375,14 @@ export function useBulkDeleteSiteVisits() {
       });
       return { previousData };
     },
-    onError: (_error, _ids, context) => {
-      if (context?.previousData) {
+    onError: (_error, _ids, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -395,14 +401,16 @@ export function useSiteInspections(options: {
   inspector?: string;
   stand?: string;
   ordering?: string;
+  enabled?: boolean;
 }) {
-  const { page, pageSize, search, result, inspector, stand, ordering } = options;
+  const { page, pageSize, search, result, inspector, stand, ordering, enabled = true } = options;
 
   return useQuery<tasksApi.PagedResponse<tasksApi.SiteInspection>, Error, tasksApi.PagedResponse<tasksApi.SiteInspection>>({
     queryKey: ['siteInspections', page, pageSize, search, result, inspector, stand, ordering],
     queryFn: () => tasksApi.getSiteInspections({ page, pageSize, search, result, inspector, stand, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -462,14 +470,14 @@ export function useDeleteSiteInspection() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -496,14 +504,14 @@ export function useBulkDeleteSiteInspections() {
       });
       return { previousData };
     },
-    onError: (_error, _ids, context) => {
-      if (context?.previousData) {
+    onError: (_error, _ids, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -527,12 +535,15 @@ export function useTaskHistories(taskId?: string) {
   });
 }
 
-export function usePendingStandApprovals() {
+export function usePendingStandApprovals(options: { enabled?: boolean } = {}) {
+  const { enabled = true } = options;
+
   return useQuery<tasksApi.PagedResponse<tasksApi.StandStageTransition>, Error>({
     queryKey: ['standStageTransitions', 'requiresApproval', true],
     queryFn: () => tasksApi.getStandStageTransitions({ page: 1, pageSize: 5, requiresApproval: true, ordering: '-created_at' }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -576,23 +587,25 @@ export function useTasksDashboard() {
   });
 }
 
-export function useStands(options: { page?: number; pageSize?: number; search?: string; status?: string; ordering?: string } = {}) {
-  const { page = 1, pageSize = 20, search, status, ordering } = options;
+export function useStands(options: { page?: number; pageSize?: number; search?: string; status?: string; ordering?: string; enabled?: boolean } = {}) {
+  const { page = 1, pageSize = 20, search, status, ordering, enabled = true } = options;
   return useQuery<tasksApi.PagedResponse<tasksApi.Stand>, Error, tasksApi.PagedResponse<tasksApi.Stand>>({
     queryKey: ['stands', page, pageSize, search, status, ordering],
     queryFn: () => tasksApi.getStands({ page, pageSize, search, status, ordering }),
     staleTime: 1000 * 60 * 5,
     retry: 1,
+    enabled,
   });
 }
 
-export function useStandStages(options: { page?: number; pageSize?: number; search?: string } = {}) {
-  const { page = 1, pageSize = 20, search } = options;
+export function useStandStages(options: { page?: number; pageSize?: number; search?: string; enabled?: boolean } = {}) {
+  const { page = 1, pageSize = 20, search, enabled = true } = options;
   return useQuery<tasksApi.PagedResponse<tasksApi.StandStage>, Error, tasksApi.PagedResponse<tasksApi.StandStage>>({
     queryKey: ['standStages', page, pageSize, search],
     queryFn: () => tasksApi.getStandStages({ page, pageSize, search }),
     staleTime: 1000 * 60 * 5,
     retry: 1,
+    enabled,
   });
 }
 
@@ -645,14 +658,47 @@ export function useDeleteStand() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
+          // ignore
+        }
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+}
+
+export function useSoftDeleteStand() {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, string, { previousData: unknown }>({
+    mutationFn: (id: string) => tasksApi.softDeleteStand(id),
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['stands'], exact: false });
+      const previousData = queryClient.getQueriesData({ queryKey: ['stands'], exact: false });
+      queryClient.setQueriesData({ queryKey: ['stands'], exact: false }, (oldData: any) => {
+        if (!oldData || !Array.isArray(oldData.results)) return oldData;
+        const filteredResults = oldData.results.filter((item: tasksApi.Stand) => item.id !== id);
+        const count = typeof oldData.count === 'number' ? Math.max(0, oldData.count - 1) : filteredResults.length;
+        return { ...oldData, count, results: filteredResults };
+      });
+      return { previousData };
+    },
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
+        try {
+          const previous = onMutateResult.previousData as any[];
+          previous.forEach(([queryKey, data]: [unknown, unknown]) => {
+            queryClient.setQueryData(queryKey as any, data);
+          });
+        } catch {
           // ignore
         }
       }
@@ -672,13 +718,15 @@ export function useStandStageTransitions(options: {
   requiresApproval?: boolean;
   isActive?: boolean;
   ordering?: string;
+  enabled?: boolean;
 } = {}) {
-  const { page = 1, pageSize = 20, search, fromStage, toStage, requiresApproval, isActive, ordering } = options;
+  const { page = 1, pageSize = 20, search, fromStage, toStage, requiresApproval, isActive, ordering, enabled = true } = options;
   return useQuery<tasksApi.PagedResponse<tasksApi.StandStageTransition>, Error, tasksApi.PagedResponse<tasksApi.StandStageTransition>>({
     queryKey: ['standStageTransitions', page, pageSize, search, fromStage, toStage, requiresApproval, isActive, ordering],
     queryFn: () => tasksApi.getStandStageTransitions({ page, pageSize, search, fromStage, toStage, requiresApproval, isActive, ordering }),
     staleTime: 1000 * 60 * 5,
     retry: 1,
+    enabled,
   });
 }
 
@@ -717,14 +765,14 @@ export function useDeleteStandStage() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -732,6 +780,14 @@ export function useDeleteStandStage() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['standStages'] });
     },
+  });
+}
+
+export function useSoftDeleteStandStage() {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, string>({
+    mutationFn: (id: string) => tasksApi.softDeleteStandStage(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['standStages'] }),
   });
 }
 
@@ -770,14 +826,14 @@ export function useDeleteStandStageTransition() {
       });
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -785,6 +841,14 @@ export function useDeleteStandStageTransition() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['standStageTransitions'] });
     },
+  });
+}
+
+export function useSoftDeleteStandStageTransition() {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, string>({
+    mutationFn: (id: string) => tasksApi.softDeleteStandStageTransition(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['standStageTransitions'] }),
   });
 }
 
@@ -811,3 +875,6 @@ export function useCreateStageHistory() {
     },
   });
 }
+
+
+

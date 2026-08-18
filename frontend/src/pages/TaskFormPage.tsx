@@ -227,7 +227,7 @@ export default function TaskFormPage() {
         let checklist = {};
         try {
           checklist = JSON.parse(checklistJson || '{}');
-        } catch (error) {
+        } catch {
           setFormError('Checklist must be valid JSON.');
           return;
         }
@@ -254,9 +254,8 @@ export default function TaskFormPage() {
       } else {
         navigate('/tasks');
       }
-    } catch (error: unknown) {
+    } catch {
       setFormError('Unable to save task. Please review the form and try again.');
-      void error;
     }
   };
 

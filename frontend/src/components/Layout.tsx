@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Topbar from './Topbar';
@@ -15,8 +15,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
-  const toggleDrawer = () => setMobileOpen((previous) => !previous);
-  const closeDrawer = () => setMobileOpen(false);
+  const toggleDrawer = useCallback(() => setMobileOpen((previous) => !previous), []);
+  const closeDrawer = useCallback(() => setMobileOpen(false), []);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>

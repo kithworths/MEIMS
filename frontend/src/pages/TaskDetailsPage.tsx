@@ -64,6 +64,7 @@ export default function TaskDetailsPage() {
   const siteInspectionQuery = useSiteInspection(taskType === 'site-inspections' ? id : undefined);
   const taskHistoriesQuery = useTaskHistories(taskType === 'project-tasks' ? id : undefined);
   const engineerTicketHistoriesQuery = useEngineerTicketHistories(taskType === 'engineer-tickets' ? id : undefined);
+  const historyQuery = taskType === 'project-tasks' ? taskHistoriesQuery : engineerTicketHistoriesQuery;
 
   const projectTaskDelete = useDeleteProjectTask();
   const engineerTicketDelete = useDeleteEngineerTicket();
@@ -125,7 +126,7 @@ export default function TaskDetailsPage() {
           {'project' in entity && <ListItem><ListItemText primary="Project" secondary={entity.project} /></ListItem>}
           {'stand' in entity && <ListItem><ListItemText primary="Stand" secondary={entity.stand ?? '—'} /></ListItem>}
           {'assignee' in entity && <ListItem><ListItemText primary="Assignee" secondary={entity.assignee ?? 'Unassigned'} /></ListItem>}
-          {'reporter' in entity && 'reporter' in entity && (<ListItem><ListItemText primary="Reporter" secondary={entity.reporter ?? '—'} /></ListItem>)}
+          {'reporter' in entity && (<ListItem><ListItemText primary="Reporter" secondary={entity.reporter ?? '—'} /></ListItem>)}
           {'status' in entity && <ListItem><ListItemText primary="Status" secondary={entity.status} /></ListItem>}
           {'priority' in entity && <ListItem><ListItemText primary="Priority" secondary={entity.priority} /></ListItem>}
           {'planned_start_date' in entity && <ListItem><ListItemText primary="Planned start" secondary={entity.planned_start_date ?? '—'} /></ListItem>}
@@ -149,21 +150,17 @@ export default function TaskDetailsPage() {
       {(taskType === 'project-tasks' || taskType === 'engineer-tickets') && (
         <Paper sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>History</Typography>
-          {(
-            taskType === 'project-tasks' ? taskHistoriesQuery : engineerTicketHistoriesQuery
-          )?.isLoading ? (
+          {historyQuery?.isLoading ? (
             <CircularProgress />
+          ) : historyQuery?.data?.results.length ? (
+            historyQuery.data.results.map((item) => (
+              <Box key={item.id} sx={{ mb: 2 }}>
+                <Typography variant="subtitle2">{item.changed_at}</Typography>
+                <Typography variant="body2">{item.notes ?? 'Status update'}</Typography>
+              </Box>
+            ))
           ) : (
-            (taskType === 'project-tasks' ? taskHistoriesQuery : engineerTicketHistoriesQuery)?.data?.results.length ? (
-              (taskType === 'project-tasks' ? taskHistoriesQuery : engineerTicketHistoriesQuery)!.data!.results.map((item) => (
-                <Box key={item.id} sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2">{item.changed_at}</Typography>
-                  <Typography variant="body2">{item.notes ?? 'Status update'}</Typography>
-                </Box>
-              ))
-            ) : (
-              <Typography>No history records found.</Typography>
-            )
+            <Typography>No history records found.</Typography>
           )}
         </Paper>
       )}

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 // Mock useAuth to control authentication state
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 import useAuth from '../auth/useAuth';
@@ -70,3 +70,6 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Unauthorized')).toBeDefined();
   });
 });
+
+
+

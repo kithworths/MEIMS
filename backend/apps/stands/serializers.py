@@ -31,6 +31,17 @@ class StandStageSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'name': 'Stand stage name is required.'})
         return attrs
 
+    def create(self, validated_data):
+        code = validated_data.get('code')
+        defaults = {key: value for key, value in validated_data.items() if key != 'code'}
+
+        instance, created = StandStage.objects.get_or_create(code=code, defaults=defaults)
+        if not created:
+            for attr, value in defaults.items():
+                setattr(instance, attr, value)
+            instance.save(update_fields=list(defaults.keys()))
+        return instance
+
 
 class StandSerializer(serializers.ModelSerializer):
     project = serializers.PrimaryKeyRelatedField(

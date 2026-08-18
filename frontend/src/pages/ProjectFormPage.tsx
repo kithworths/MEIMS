@@ -67,9 +67,8 @@ export default function ProjectFormPage() {
         const created = await createMutation.mutateAsync(payload as any);
         navigate(`/projects/${created.id}`);
       }
-    } catch (err) {
+    } catch {
       // for now rely on field-level errors from backend; could map them to UI
-      void err;
     }
   };
 

@@ -26,7 +26,7 @@ export default function AuditPage() {
   const summary = useAuditSummary({ search, start_date: startDate || undefined, end_date: endDate || undefined, role: role || undefined });
   const exportMutation = useExportAuditLogs();
 
-  const auditRecords = data?.results ?? [];
+  const auditRecords = useMemo(() => data?.results ?? [], [data?.results]);
   const totalEvents = data?.count ?? 0;
   const roleOptions = useMemo(() => {
     const roles = new Set<string>();

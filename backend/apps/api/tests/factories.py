@@ -24,11 +24,11 @@ def create_user(email: str = 'test.user@example.com', password: str = 'Str0ngPas
 
 
 def create_department(name: str = 'Test Dept', code: str = 'TEST') -> Department:
-    return Department.objects.create(department_name=name, department_code=code)
+    return Department.objects.get_or_create(department_name=name, defaults={'department_code': code})[0]
 
 
 def create_role(name: str = 'Test Role') -> Role:
-    return Role.objects.create(name=name)
+    return Role.objects.get_or_create(name=name, defaults={'description': ''})[0]
 
 
 def create_permission(module: str, action: str, description: str = '') -> Permission:

@@ -27,7 +27,7 @@ class Project(models.Model):
     gis_locations = GenericRelation('gis.GISLocation', related_query_name='project')
 
     # audit & soft delete
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='projects_created'
@@ -43,6 +43,7 @@ class Project(models.Model):
         verbose_name_plural = 'projects'
         ordering = ['-start_date', 'name']
         indexes = [
+            models.Index(fields=['is_active', 'is_deleted', 'status', 'created_at'], name='proj_status_created_idx'),
             models.Index(fields=['status'], name='proj_status_idx'),
             models.Index(fields=['start_date'], name='proj_start_date_idx'),
         ]

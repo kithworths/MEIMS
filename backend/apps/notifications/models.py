@@ -57,6 +57,7 @@ class Notification(models.Model):
         indexes = [
             models.Index(fields=['user', 'is_read'], name='notification_user_read_idx'),
             models.Index(fields=['user', 'is_archived'], name='notification_user_archived_idx'),
+            models.Index(fields=['user', 'is_archived', 'created_at'], name='notif_archived_created_idx'),
         ]
 
     def __str__(self) -> str:

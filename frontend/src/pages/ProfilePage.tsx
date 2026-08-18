@@ -10,20 +10,20 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function ProfilePage() {
   const { data: user, isLoading, error } = useProfile();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [status, setStatus] = useState<string | null>(null);
+  const notify = useNotification();
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const handleChangePassword = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
-    setStatus(null);
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       setFormError('Please complete all password fields.');
@@ -38,12 +38,11 @@ export default function ProfilePage() {
     setSubmitting(true);
     try {
       await changePassword(currentPassword, newPassword, confirmPassword);
-      setStatus('Your password has been updated successfully.');
+      notify.notify({ message: 'Your password has been updated successfully.', severity: 'success' });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (_error) {
-      void _error;
+    } catch {
       setFormError('Unable to update password. Please verify your current password and try again.');
     } finally {
       setSubmitting(false);
@@ -101,7 +100,6 @@ export default function ProfilePage() {
       <Card>
         <CardHeader title="Change password" subheader="Protect your account with a strong password." />
         <CardContent>
-          {status ? <Alert severity="success" sx={{ mb: 2 }}>{status}</Alert> : null}
           {formError ? <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert> : null}
 
           <Box component="form" onSubmit={handleChangePassword} noValidate>

@@ -2,17 +2,31 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../api/axios';
 
 export interface RoleSummary {
-  id: number;
+  id: string | number;
   name: string;
   description?: string;
-  permissions?: number[];
-  users?: number[];
+  permissions?: Array<string | number>;
+  users?: Array<string | number>;
+}
+
+export interface PermissionSummary {
+  id: string | number;
+  module: string;
+  action: string;
+  description?: string;
+  is_active?: boolean;
 }
 
 interface RolesResponse {
   count?: number;
   results?: RoleSummary[];
   data?: RoleSummary[];
+}
+
+interface PermissionsResponse {
+  count?: number;
+  results?: PermissionSummary[];
+  data?: PermissionSummary[];
 }
 
 function getRoleList(payload: RolesResponse): RoleSummary[] {
@@ -26,6 +40,24 @@ export function useUsers(page: number, pageSize: number, search: string) {
     queryKey: ['roles', page, pageSize, search],
     queryFn: async () => {
       const response = await api.get<RolesResponse>('roles/', {
+        params: {
+          page,
+          page_size: pageSize,
+          search,
+        },
+      });
+      return response.data;
+    },
+    staleTime: 1000 * 60,
+    retry: 1,
+  });
+}
+
+export function usePermissions(page = 1, pageSize = 100, search = '') {
+  return useQuery<PermissionsResponse, Error, PermissionsResponse>({
+    queryKey: ['permissions', page, pageSize, search],
+    queryFn: async () => {
+      const response = await api.get<PermissionsResponse>('permissions/', {
         params: {
           page,
           page_size: pageSize,

@@ -36,7 +36,8 @@ class NotificationViewSet(BaseModelViewSet):
 
         return qs
 
-    @method_decorator(cache_page(60 * 2))
+    # Notifications are user-specific and stateful. Avoid caching the list response
+    # because a user may mark messages as read or archived and expect immediate updates.
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

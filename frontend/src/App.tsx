@@ -1,66 +1,71 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
-import DashboardPage from './pages/DashboardPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import LoginPage from './pages/LoginPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import UnauthorizedPage from './pages/UnauthorizedPage';
+import { NotificationProvider } from './components/NotificationProvider';
+import Layout from './components/Layout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import './App.css';
-import Layout from './components/Layout';
-import DepartmentsPage from './pages/DepartmentsPage';
-import DepartmentDetailsPage from './pages/DepartmentDetailsPage';
-import DepartmentFormPage from './pages/DepartmentFormPage';
-import ProjectsPage from './pages/ProjectsPage';
-import ProjectDetailsPage from './pages/ProjectDetailsPage';
-import ProjectFormPage from './pages/ProjectFormPage';
-import FinancePage from './pages/FinancePage';
-import FinanceReceiptsPage from './pages/FinanceReceiptsPage';
-import FinancePaymentDetailsPage from './pages/FinancePaymentDetailsPage';
-import FinanceReceiptDetailsPage from './pages/FinanceReceiptDetailsPage';
-import FinanceAllocationsPage from './pages/FinanceAllocationsPage';
-import DocumentsPage from './pages/DocumentsPage';
-import DocumentDetailsPage from './pages/DocumentDetailsPage';
-import GISPage from './pages/GISPage';
-import NotificationsPage from './pages/NotificationsPage';
-import ReportsPage from './pages/ReportsPage';
-import AuditPage from './pages/AuditPage';
-import TasksPage from './pages/TasksPage';
-import TaskDetailsPage from './pages/TaskDetailsPage';
-import TaskFormPage from './pages/TaskFormPage';
-import StandsPage from './pages/StandsPage';
-import StandFormPage from './pages/StandFormPage';
-import StandDetailsPage from './pages/StandDetailsPage';
-import UsersPage from './pages/UsersPage';
-import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import ServerErrorPage from './pages/ServerErrorPage';
+import LoadingScreen from './components/LoadingScreen';
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
+const DepartmentsPage = lazy(() => import('./pages/DepartmentsPage'));
+const DepartmentDetailsPage = lazy(() => import('./pages/DepartmentDetailsPage'));
+const DepartmentFormPage = lazy(() => import('./pages/DepartmentFormPage'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage'));
+const ProjectDetailsPage = lazy(() => import('./pages/ProjectDetailsPage'));
+const ProjectFormPage = lazy(() => import('./pages/ProjectFormPage'));
+const FinancePage = lazy(() => import('./pages/FinancePage'));
+const FinanceReceiptsPage = lazy(() => import('./pages/FinanceReceiptsPage'));
+const FinancePaymentDetailsPage = lazy(() => import('./pages/FinancePaymentDetailsPage'));
+const FinanceReceiptDetailsPage = lazy(() => import('./pages/FinanceReceiptDetailsPage'));
+const FinanceAllocationsPage = lazy(() => import('./pages/FinanceAllocationsPage'));
+const DocumentsPage = lazy(() => import('./pages/DocumentsPage'));
+const DocumentDetailsPage = lazy(() => import('./pages/DocumentDetailsPage'));
+const GISPage = lazy(() => import('./pages/GISPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const ReportsPage = lazy(() => import('./pages/ReportsPage'));
+const AuditPage = lazy(() => import('./pages/AuditPage'));
+const TasksPage = lazy(() => import('./pages/TasksPage'));
+const TaskDetailsPage = lazy(() => import('./pages/TaskDetailsPage'));
+const TaskFormPage = lazy(() => import('./pages/TaskFormPage'));
+const StandsPage = lazy(() => import('./pages/StandsPage'));
+const StandFormPage = lazy(() => import('./pages/StandFormPage'));
+const StandDetailsPage = lazy(() => import('./pages/StandDetailsPage'));
+const UsersPage = lazy(() => import('./pages/UsersPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'));
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <ErrorBoundary>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <DashboardPage />
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
+      <NotificationProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingScreen message="Loading page…" />}>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <DashboardPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
             <Route
               path="/users"
               element={
-                <ProtectedRoute requiredPermission="authorization.view_role">
+                <ProtectedRoute requiredPermission="authorization.Read">
                   <Layout>
                     <UsersPage />
                   </Layout>
@@ -383,8 +388,10 @@ function App() {
             <Route path="/500" element={<ServerErrorPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </ErrorBoundary>
-      </BrowserRouter>
+        </Suspense>
+      </ErrorBoundary>
+    </BrowserRouter>
+  </NotificationProvider>
     </AuthProvider>
   );
 }

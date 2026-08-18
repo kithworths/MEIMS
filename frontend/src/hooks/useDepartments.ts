@@ -7,16 +7,18 @@ export interface DepartmentsQueryOptions {
   search: string;
   status: 'all' | 'active' | 'inactive';
   ordering: string;
+  enabled?: boolean;
 }
 
 export function useDepartments(options: DepartmentsQueryOptions) {
-  const { page, pageSize, search, status, ordering } = options;
+  const { page, pageSize, search, status, ordering, enabled = true } = options;
 
   return useQuery<departmentsApi.DepartmentListResponse, Error, departmentsApi.DepartmentListResponse>({
     queryKey: ['departments', page, pageSize, search, status, ordering],
     queryFn: () => departmentsApi.getDepartments({ page, pageSize, search, status, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -89,14 +91,14 @@ export function useDeleteDepartment() {
 
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore restore errors
         }
       }
@@ -137,14 +139,14 @@ export function useBulkDeleteDepartments() {
 
       return { previousData };
     },
-    onError: (_error, _departmentIds, context) => {
-      if (context?.previousData) {
+    onError: (_error, _departmentIds, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore restore errors
         }
       }
@@ -155,3 +157,15 @@ export function useBulkDeleteDepartments() {
     },
   });
 }
+
+export function useExportDepartments() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (params?: { page?: number; pageSize?: number; search?: string; status?: 'active' | 'inactive' | 'all'; ordering?: string }) =>
+      departmentsApi.exportDepartments(params),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['departments'] }),
+  });
+}
+
+
+

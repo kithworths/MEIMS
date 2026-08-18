@@ -122,9 +122,23 @@ class ReportViewSet(BaseModelViewSet):
             if department_id:
                 qs = qs.filter(id=department_id)
 
+            department_ids = [str(d.id) for d in qs]
+            project_counts = {}
+            if department_ids:
+                project_counts = {
+                    row['metadata__department_id']: row['count']
+                    for row in Project.objects.filter(
+                        is_deleted=False,
+                        is_active=True,
+                        metadata__department_id__in=department_ids,
+                    )
+                    .values('metadata__department_id')
+                    .annotate(count=Count('id'))
+                }
+
             writer.writerow(['department_id', 'department_code', 'department_name', 'project_count'])
             for d in qs:
-                project_count = Project.objects.filter(is_deleted=False, is_active=True, metadata__department_id=str(d.id)).count()
+                project_count = project_counts.get(str(d.id), 0)
                 writer.writerow([str(d.id), d.department_code, d.department_name, project_count])
             return output
 

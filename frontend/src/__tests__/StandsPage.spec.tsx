@@ -16,6 +16,11 @@ vi.mock('../auth/useAuth', () => ({
   }),
 }));
 
+vi.mock('../contexts/NotificationContext', () => ({
+  __esModule: true,
+  useNotification: vi.fn<unknown[], unknown>(() => ({ notify: () => {} })),
+}));
+
 describe('StandsPage', () => {
   beforeEach(() => {
     queryClient.clear();
@@ -103,3 +108,5 @@ describe('StandsPage', () => {
     expect(await screen.findByText('New Transition')).toBeInTheDocument();
   });
 });
+
+

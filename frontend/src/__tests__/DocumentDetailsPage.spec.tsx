@@ -4,18 +4,18 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 vi.mock('../hooks/useDocuments', () => ({
   __esModule: true,
-  useDocument: vi.fn(),
-  useDocumentVersions: vi.fn(),
-  useLockDocument: vi.fn(),
-  useUnlockDocument: vi.fn(),
-  useUpdateDocument: vi.fn(),
-  useDeleteDocument: vi.fn(),
-  useRestoreDocument: vi.fn(),
+  useDocument: vi.fn<unknown[], unknown>(),
+  useDocumentVersions: vi.fn<unknown[], unknown>(),
+  useLockDocument: vi.fn<unknown[], unknown>(),
+  useUnlockDocument: vi.fn<unknown[], unknown>(),
+  useUpdateDocument: vi.fn<unknown[], unknown>(),
+  useDeleteDocument: vi.fn<unknown[], unknown>(),
+  useRestoreDocument: vi.fn<unknown[], unknown>(),
 }));
 
 import useAuth from '../auth/useAuth';
@@ -32,7 +32,7 @@ const mockUseRestoreDocument = useRestoreDocument as unknown as { mockReturnValu
 describe('DocumentDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    global.confirm = vi.fn(() => true);
+    global.confirm = vi.fn<[string?], boolean>(() => true);
   });
 
   it('renders document details and allows restore when deleted', () => {
@@ -47,12 +47,12 @@ describe('DocumentDetailsPage', () => {
         is_deleted: true,
       },
       isLoading: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
     mockUseDocumentVersions.mockReturnValue({ data: { results: [] }, isLoading: false });
-    mockUseUpdateDocument.mockReturnValue({ mutate: vi.fn(), isLoading: false });
-    mockUseDeleteDocument.mockReturnValue({ mutate: vi.fn(), isLoading: false });
-    const restoreMutate = vi.fn();
+    mockUseUpdateDocument.mockReturnValue({ mutate: vi.fn<unknown[], unknown>(), isLoading: false });
+    mockUseDeleteDocument.mockReturnValue({ mutate: vi.fn<unknown[], unknown>(), isLoading: false });
+    const restoreMutate = vi.fn<unknown[], unknown>();
     mockUseRestoreDocument.mockReturnValue({ mutate: restoreMutate, isLoading: false });
 
     render(
@@ -74,3 +74,6 @@ describe('DocumentDetailsPage', () => {
     expect(restoreMutate).toHaveBeenCalledWith('doc-1', { onSuccess: expect.any(Function) });
   });
 });
+
+
+

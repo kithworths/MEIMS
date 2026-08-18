@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
-const mockUseReports = vi.fn();
-const mockUseCreateReport = vi.fn();
+const mockUseReports = vi.fn<unknown[], unknown>();
+const mockUseCreateReport = vi.fn<unknown[], unknown>();
 
 vi.mock('../hooks/useReports', () => ({
   useReports: () => mockUseReports(),
@@ -25,9 +25,9 @@ describe('ReportsPage', () => {
       results: [],
       count: 0,
       isLoading: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
-    mockUseCreateReport.mockReturnValue({ mutateAsync: vi.fn(), status: 'idle' });
+    mockUseCreateReport.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), status: 'idle' });
   });
 
   it('renders reporting centre and generate form', async () => {
@@ -44,3 +44,6 @@ describe('ReportsPage', () => {
     expect(screen.getByRole('button', { name: 'Generate' })).toBeTruthy();
   });
 });
+
+
+

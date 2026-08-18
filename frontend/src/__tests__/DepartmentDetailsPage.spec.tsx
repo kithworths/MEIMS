@@ -4,13 +4,13 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 vi.mock('../hooks/useDepartments', () => ({
   __esModule: true,
-  useDepartment: vi.fn(),
-  useDeleteDepartment: vi.fn(),
+  useDepartment: vi.fn<unknown[], unknown>(),
+  useDeleteDepartment: vi.fn<unknown[], unknown>(),
 }));
 
 import useAuth from '../auth/useAuth';
@@ -41,7 +41,7 @@ describe('DepartmentDetailsPage', () => {
       isLoading: false,
       isError: false,
     });
-    mockUseDeleteDepartment.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
+    mockUseDeleteDepartment.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
 
     render(
       <MemoryRouter initialEntries={['/departments/1']}>
@@ -57,3 +57,6 @@ describe('DepartmentDetailsPage', () => {
     expect(screen.getByRole('button', { name: 'Delete' })).toBeDefined();
   });
 });
+
+
+

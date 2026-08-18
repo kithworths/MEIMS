@@ -1,12 +1,13 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import { memo } from 'react';
 
 interface LoadingScreenProps {
   message?: string;
 }
 
-export default function LoadingScreen({ message = 'Loading…' }: LoadingScreenProps) {
+function LoadingScreen({ message = 'Loading…' }: LoadingScreenProps) {
   return (
     <Box
       sx={{
@@ -25,3 +26,5 @@ export default function LoadingScreen({ message = 'Loading…' }: LoadingScreenP
     </Box>
   );
 }
+
+export default memo(LoadingScreen);

@@ -43,6 +43,12 @@ const api = axios.create({
 // Request interceptor: attach Bearer when available
 api.interceptors.request.use((config) => {
   const headers = (config.headers ?? {}) as AxiosRequestHeaders;
+  const url = config.url ?? '';
+  const isAbsoluteUrl = typeof url === 'string' && (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url) || url.startsWith('//'));
+
+  if (!isAbsoluteUrl && typeof url === 'string') {
+    config.url = url.startsWith('/') ? url : `/${url}`;
+  }
 
   if (accessToken) {
     headers.Authorization = 'Bearer ' + accessToken;

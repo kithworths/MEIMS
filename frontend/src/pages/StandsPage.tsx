@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import Snackbar from '@mui/material/Snackbar';
+import { useNotification } from '../contexts/NotificationContext';
 import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -78,7 +78,7 @@ export default function StandsPage() {
   const [editingStage, setEditingStage] = useState<StandStage | null>(null);
   const [transitionDialogOpen, setTransitionDialogOpen] = useState(false);
   const [editingTransition, setEditingTransition] = useState<StandStageTransition | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
+  const notify = useNotification();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [stageForm, setStageForm] = useState({ code: '', name: '', description: '', ordinal: 0, is_active: true });
@@ -99,8 +99,8 @@ export default function StandsPage() {
   const stands = standsQuery.data?.results ?? [];
   const totalStands = standsQuery.data?.count ?? 0;
   const pageCount = Math.max(1, Math.ceil(totalStands / PAGE_SIZE));
-  const stages = stageQuery.data?.results ?? [];
-  const transitions = transitionQuery.data?.results ?? [];
+  const stages = useMemo(() => stageQuery.data?.results ?? [], [stageQuery.data?.results]);
+  const transitions = useMemo(() => transitionQuery.data?.results ?? [], [transitionQuery.data?.results]);
 
   const handleTabChange = (_event: React.SyntheticEvent, value: number) => {
     setActiveTab(value);
@@ -117,44 +117,44 @@ export default function StandsPage() {
   const handleStandDelete = async (id: string) => {
     try {
       await deleteStandMutation.mutateAsync(id);
-      setNotification('Stand deleted successfully.');
-    } catch (_error) {
+      notify.notify({ message: 'Stand deleted successfully.', severity: 'success' });
+    } catch {
       setErrorMessage('Unable to delete the stand. Please try again.');
     }
   };
 
   const handleStageSave = async () => {
     setErrorMessage(null);
-    try {
+        try {
       if (editingStage) {
         await updateStageMutation.mutateAsync({ id: editingStage.id, payload: stageForm });
-        setNotification('Stand stage updated successfully.');
+            notify.notify({ message: 'Stand stage updated successfully.', severity: 'success' });
       } else {
         await createStageMutation.mutateAsync(stageForm);
-        setNotification('Stand stage created successfully.');
+            notify.notify({ message: 'Stand stage created successfully.', severity: 'success' });
       }
       setStageDialogOpen(false);
       setEditingStage(null);
       setStageForm({ code: '', name: '', description: '', ordinal: 0, is_active: true });
-    } catch (_error) {
+    } catch {
       setErrorMessage('Unable to save the stand stage. Please review the form and try again.');
     }
   };
 
   const handleTransitionSave = async () => {
     setErrorMessage(null);
-    try {
+        try {
       if (editingTransition) {
         await updateTransitionMutation.mutateAsync({ id: editingTransition.id, payload: transitionForm });
-        setNotification('Stand transition updated successfully.');
+            notify.notify({ message: 'Stand transition updated successfully.', severity: 'success' });
       } else {
         await createTransitionMutation.mutateAsync(transitionForm);
-        setNotification('Stand transition created successfully.');
+            notify.notify({ message: 'Stand transition created successfully.', severity: 'success' });
       }
       setTransitionDialogOpen(false);
       setEditingTransition(null);
       setTransitionForm({ from_stage: '', to_stage: '', requires_approval: false, is_active: true });
-    } catch (_error) {
+    } catch {
       setErrorMessage('Unable to save the stand transition. Please review the form and try again.');
     }
   };
@@ -162,17 +162,17 @@ export default function StandsPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
 
-    try {
+        try {
       if (deleteTarget.type === 'stand') {
         await handleStandDelete(deleteTarget.id);
       } else if (deleteTarget.type === 'stage') {
         await deleteStageMutation.mutateAsync(deleteTarget.id);
-        setNotification('Stand stage deleted successfully.');
+            notify.notify({ message: 'Stand stage deleted successfully.', severity: 'success' });
       } else if (deleteTarget.type === 'transition') {
         await deleteTransitionMutation.mutateAsync(deleteTarget.id);
-        setNotification('Stand stage transition deleted successfully.');
+            notify.notify({ message: 'Stand stage transition deleted successfully.', severity: 'success' });
       }
-    } catch (_error) {
+    } catch {
       setErrorMessage('Unable to delete the selected item. Please try again.');
     } finally {
       closeDeleteDialog();
@@ -673,12 +673,7 @@ export default function StandsPage() {
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={Boolean(notification)}
-        autoHideDuration={4000}
-        onClose={() => setNotification(null)}
-        message={notification}
-      />
+      {/* Notifications are handled by global NotificationProvider */}
     </Box>
   );
 }

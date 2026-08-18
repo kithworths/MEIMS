@@ -4,22 +4,29 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 vi.mock('../hooks/useDepartments', () => ({
   __esModule: true,
-  useDepartments: vi.fn(),
-  useBulkDeleteDepartments: vi.fn(),
+  useDepartments: vi.fn<unknown[], unknown>(),
+  useBulkDeleteDepartments: vi.fn<unknown[], unknown>(),
+  useExportDepartments: vi.fn<unknown[], unknown>(),
+}));
+
+vi.mock('../contexts/NotificationContext', () => ({
+  __esModule: true,
+  useNotification: vi.fn<unknown[], unknown>(() => ({ notify: () => {} })),
 }));
 
 import useAuth from '../auth/useAuth';
-import { useDepartments, useBulkDeleteDepartments } from '../hooks/useDepartments';
+import { useDepartments, useBulkDeleteDepartments, useExportDepartments } from '../hooks/useDepartments';
 import DepartmentsPage from '../pages/DepartmentsPage';
 
 const mockUseAuth = useAuth as unknown as { mockReturnValue: (value: unknown) => void };
 const mockUseDepartments = useDepartments as unknown as { mockReturnValue: (value: unknown) => void };
 const mockUseBulkDeleteDepartments = useBulkDeleteDepartments as unknown as { mockReturnValue: (value: unknown) => void };
+const mockUseExportDepartments = useExportDepartments as unknown as { mockReturnValue: (value: unknown) => void };
 
 describe('DepartmentsPage', () => {
   it('renders department table and action controls', () => {
@@ -60,9 +67,10 @@ describe('DepartmentsPage', () => {
       },
       isLoading: false,
       isError: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
-    mockUseBulkDeleteDepartments.mockReturnValue({ mutateAsync: vi.fn() });
+    mockUseBulkDeleteDepartments.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>() });
+    mockUseExportDepartments.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>() });
 
     render(
       <MemoryRouter>
@@ -78,3 +86,6 @@ describe('DepartmentsPage', () => {
     expect(screen.getAllByText('Inactive').length).toBeGreaterThanOrEqual(1);
   });
 });
+
+
+

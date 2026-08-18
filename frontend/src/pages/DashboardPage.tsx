@@ -83,15 +83,15 @@ export default function DashboardPage() {
   const canViewApprovals = auth.hasPermission('stands.Read');
 
   const statsQuery = useDashboardStats();
-  const financeQuery = useFinanceDashboard();
+  const financeQuery = useFinanceDashboard({ enabled: canViewFinance });
   const projectsQuery = useProjectDashboard();
   const tasksQuery = useTasksDashboard();
-  const approvalsQuery = usePendingStandApprovals();
-  const notificationsQuery = useRecentNotifications();
-  const gisQuery = useGISLocations({ page: 1, pageSize: 5 });
+  const approvalsQuery = usePendingStandApprovals({ enabled: canViewApprovals });
+  const notificationsQuery = useRecentNotifications(canViewNotifications);
+  const gisQuery = useGISLocations({ page: 1, pageSize: 5, enabled: canViewGIS });
   const documentsQuery = useDocuments({ page: 1, pageSize: 5, ordering: '-created_at' });
-  const departmentsQuery = useDepartments({ page: 1, pageSize: 5, search: '', status: 'all', ordering: 'name' });
-  const auditSummaryQuery = useAuditSummary();
+  const departmentsQuery = useDepartments({ page: 1, pageSize: 5, search: '', status: 'all', ordering: 'name', enabled: canViewDepartments });
+  const auditSummaryQuery = useAuditSummary({ enabled: canViewAudit });
 
   const isLoading = [
     statsQuery.isLoading,
@@ -124,7 +124,7 @@ export default function DashboardPage() {
     return auth.user.first_name ? `${auth.user.first_name} ${auth.user.last_name}` : auth.user.email;
   }, [auth.user]);
 
-  const projects = projectsQuery.data?.results ?? [];
+  const projects = useMemo(() => projectsQuery.data?.results ?? [], [projectsQuery.data?.results]);
   const totalProjects = projectsQuery.data?.count ?? 0;
   const projectStatusCounts = useMemo(() => {
     const counts = new Map<string, number>();

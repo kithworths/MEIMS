@@ -48,6 +48,9 @@ class AuthTokenObtainPairSerializer(TokenObtainPairSerializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'employee_number': user.employee_number,
+            'role': getattr(user, 'role', None),
+            'roles': user.get_role_names() if hasattr(user, 'get_role_names') else [],
+            'permissions': user.get_permission_strings() if hasattr(user, 'get_permission_strings') else [],
         }
         return data
 
@@ -75,6 +78,9 @@ class LogoutSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     """Serializer for returning authenticated user profile information."""
 
+    roles = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -87,8 +93,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             'employee_number',
             'department',
             'role',
+            'roles',
+            'permissions',
         )
         read_only_fields = fields
+
+    def get_roles(self, obj):
+        return obj.get_role_names() if hasattr(obj, 'get_role_names') else []
+
+    def get_permissions(self, obj):
+        return obj.get_permission_strings() if hasattr(obj, 'get_permission_strings') else []
 
 
 class ChangePasswordSerializer(serializers.Serializer):

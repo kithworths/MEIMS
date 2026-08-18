@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = True
+DEBUG = False if TESTING else True
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver', cast=Csv())
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = config('DJANGO_CSRF_TRUSTED_ORIGINS', default='http://localhost:3000,http://localhost:5173', cast=Csv())

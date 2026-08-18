@@ -3,10 +3,10 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 // Mock the auth API module
 vi.mock('../api/auth', () => ({
-  refreshSession: vi.fn(),
-  fetchProfile: vi.fn(),
-  login: vi.fn(),
-  logout: vi.fn(),
+  refreshSession: vi.fn<unknown[], unknown>(),
+  fetchProfile: vi.fn<unknown[], unknown>(),
+  login: vi.fn<unknown[], unknown>(),
+  logout: vi.fn<unknown[], unknown>(),
 }));
 
 import { refreshSession, fetchProfile } from '../api/auth';
@@ -58,3 +58,6 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('email').textContent).toBe('test@example.com');
   });
 });
+
+
+

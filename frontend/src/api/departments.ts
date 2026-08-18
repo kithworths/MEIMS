@@ -105,3 +105,17 @@ export async function deleteDepartment(id: string) {
 export async function bulkDeleteDepartments(ids: string[]) {
   await Promise.all(ids.map((id) => api.delete(`departments/${id}/`)));
 }
+
+export async function exportDepartments(params?: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: 'active' | 'inactive' | 'all';
+  ordering?: string;
+}) {
+  const response = await api.get('departments/export/', {
+    params: { ...params, export_format: 'csv' },
+    responseType: 'blob',
+  });
+  return response.data;
+}

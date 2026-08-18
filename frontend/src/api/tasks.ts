@@ -593,6 +593,11 @@ export async function deleteStandStage(id: string) {
   await api.delete(`stand-stages/${id}/`);
 }
 
+export async function softDeleteStandStage(id: string) {
+  const response = await api.post(`stand-stages/${id}/soft_delete/`);
+  return response.data;
+}
+
 export async function getStand(id: string) {
   const response = await api.get<Stand>(`stands/${id}/`);
   return response.data;
@@ -610,6 +615,11 @@ export async function updateStand(id: string, payload: StandUpdatePayload) {
 
 export async function deleteStand(id: string) {
   await api.delete(`stands/${id}/`);
+}
+
+export async function softDeleteStand(id: string) {
+  const response = await api.post(`stands/${id}/soft_delete/`);
+  return response.data;
 }
 
 export async function getStandStageTransitions(params: {
@@ -652,6 +662,11 @@ export async function updateStandStageTransition(id: string, payload: StandStage
 
 export async function deleteStandStageTransition(id: string) {
   await api.delete(`stand-stage-transitions/${id}/`);
+}
+
+export async function softDeleteStandStageTransition(id: string) {
+  const response = await api.post(`stand-stage-transitions/${id}/soft_delete/`);
+  return response.data;
 }
 
 export async function getStageHistories(params: {

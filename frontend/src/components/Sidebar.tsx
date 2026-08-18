@@ -14,7 +14,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import useAuth from '../auth/useAuth';
-import { type ReactNode } from 'react';
+import { memo, type ReactNode, useCallback, useMemo } from 'react';
 
 interface SidebarProps {
   open: boolean;
@@ -41,21 +41,29 @@ const navItems: NavItem[] = [
   { label: 'Finance', icon: <ApartmentIcon />, to: '/finance', permission: 'payments.Read' },
   { label: 'Documents', icon: <ApartmentIcon />, to: '/documents', permission: 'documents.Read' },
   { label: 'Departments', icon: <ApartmentIcon />, to: '/departments', permission: 'departments.Read' },
-  { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.view_role' },
+  { label: 'Users', icon: <PersonIcon />, to: '/users', permission: 'authorization.Read' },
   { label: 'Profile', icon: <SettingsIcon />, to: '/profile' },
 ];
 
-export default function Sidebar({ open, onClose, mobile }: SidebarProps) {
+function Sidebar({ open, onClose, mobile }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
 
-  const handleNavigation = (to: string) => {
-    navigate(to);
-    if (mobile && onClose) {
-      onClose();
-    }
-  };
+  const handleNavigation = useCallback(
+    (to: string) => {
+      navigate(to);
+      if (mobile && onClose) {
+        onClose();
+      }
+    },
+    [navigate, mobile, onClose],
+  );
+
+  const items = useMemo(
+    () => navItems.filter((item) => !item.permission || auth.hasPermission(item.permission)),
+    [auth],
+  );
 
   return (
     <Drawer
@@ -78,9 +86,7 @@ export default function Sidebar({ open, onClose, mobile }: SidebarProps) {
       </Box>
       <Divider />
       <List>
-        {navItems
-          .filter((item) => !item.permission || auth.hasPermission(item.permission))
-          .map((item) => (
+        {items.map((item) => (
             <ListItemButton
               key={item.label}
               selected={location.pathname === item.to}
@@ -94,3 +100,5 @@ export default function Sidebar({ open, onClose, mobile }: SidebarProps) {
     </Drawer>
   );
 }
+
+export default memo(Sidebar);

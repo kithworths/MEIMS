@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.projects.models import Project
@@ -12,7 +13,7 @@ from apps.projects.models import Project
 
 class StandBaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -97,6 +98,7 @@ class Stand(StandBaseModel):
         ordering = ['project', 'code']
         constraints = [
             models.UniqueConstraint(fields=['project', 'code'], name='unique_project_stand_code'),
+            models.CheckConstraint(check=Q(area_sq_m__gt=0) | Q(area_sq_m__isnull=True), name='stand_area_positive_chk'),
         ]
         indexes = [
             models.Index(fields=['project'], name='stand_project_idx'),
@@ -197,7 +199,8 @@ class StandStageTransition(StandBaseModel):
             models.UniqueConstraint(
                 fields=['from_stage', 'to_stage'],
                 name='unique_standstage_transition',
-            )
+            ),
+            models.CheckConstraint(check=Q(from_stage__isnull=False) & Q(to_stage__isnull=False), name='standstage_transition_not_null_chk'),
         ]
         indexes = [
             models.Index(fields=['from_stage'], name='standstagetransition_from_idx'),

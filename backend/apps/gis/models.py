@@ -21,7 +21,7 @@ else:
 
 class GISBaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -42,6 +42,9 @@ class GISBaseModel(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['is_active', 'is_deleted', 'created_at'], name='%(app_label)s_%(class)s_active_deleted_created_idx'),
+        ]
 
 
 class GISLocation(GISBaseModel):

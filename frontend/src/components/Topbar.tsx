@@ -14,8 +14,8 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useEffect, useState, type MouseEvent } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { memo, useCallback, useEffect, useState, type MouseEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../lib/themeContext';
 import useAuth from '../auth/useAuth';
 import { useRecentNotifications, useUnreadNotificationCount } from '../hooks/useNotifications';
@@ -24,15 +24,16 @@ interface TopbarProps {
   onToggleDrawer?: () => void;
 }
 
-export default function Topbar({ onToggleDrawer }: TopbarProps) {
+function Topbar({ onToggleDrawer }: TopbarProps) {
   const { mode, toggleTheme } = useThemeMode();
   const auth = useAuth();
   const navigate = useNavigate();
   const [notificationsAnchor, setNotificationsAnchor] = useState<null | HTMLElement>(null);
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
 
-  const { data: unreadCountData } = useUnreadNotificationCount();
-  const { data: latestNotificationsData } = useRecentNotifications();
+  const canViewNotifications = auth.hasPermission('notifications.Read');
+  const { data: unreadCountData } = useUnreadNotificationCount(canViewNotifications);
+  const { data: latestNotificationsData } = useRecentNotifications(canViewNotifications);
 
   const unreadCount = unreadCountData ?? 0;
   const latestNotifications = latestNotificationsData?.results ?? [];
@@ -41,26 +42,21 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
     document.title = 'MEIMS — Management Portal';
   }, []);
 
-  const openNotifications = (event: MouseEvent<HTMLElement>) => setNotificationsAnchor(event.currentTarget);
-  const closeNotifications = () => setNotificationsAnchor(null);
-  const openProfileMenu = (event: MouseEvent<HTMLElement>) => setProfileAnchor(event.currentTarget);
-  const closeProfileMenu = () => setProfileAnchor(null);
+  const openNotifications = useCallback((event: MouseEvent<HTMLElement>) => setNotificationsAnchor(event.currentTarget), []);
+  const closeNotifications = useCallback(() => setNotificationsAnchor(null), []);
+  const openProfileMenu = useCallback((event: MouseEvent<HTMLElement>) => setProfileAnchor(event.currentTarget), []);
+  const closeProfileMenu = useCallback(() => setProfileAnchor(null), []);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     closeProfileMenu();
     await auth.logout();
     navigate('/login', { replace: true });
-  };
+  }, [auth, closeProfileMenu, navigate]);
 
-  const notificationItems: Array<{
-    id: string;
-    title: string;
-    message?: string | null;
-  }> = latestNotifications.length
-    ? latestNotifications.map((item) => ({ id: item.id, title: item.title, message: item.message }))
-    : [
-        { id: 'empty', title: 'No notifications yet', message: 'You are all caught up.' },
-      ];
+  const notificationItems =
+    latestNotifications.length > 0
+      ? latestNotifications.map((item) => ({ id: item.id, title: item.title, message: item.message }))
+      : [{ id: 'empty', title: 'No notifications yet', message: 'You are all caught up.' }];
 
   return (
     <AppBar position="sticky" color="primary" elevation={2}>
@@ -144,3 +140,5 @@ export default function Topbar({ onToggleDrawer }: TopbarProps) {
     </AppBar>
   );
 }
+
+export default memo(Topbar);

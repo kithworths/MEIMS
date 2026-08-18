@@ -4,14 +4,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 vi.mock('../hooks/useDepartments', () => ({
   __esModule: true,
-  useDepartment: vi.fn(),
-  useCreateDepartment: vi.fn(),
-  useUpdateDepartment: vi.fn(),
+  useDepartment: vi.fn<unknown[], unknown>(),
+  useCreateDepartment: vi.fn<unknown[], unknown>(),
+  useUpdateDepartment: vi.fn<unknown[], unknown>(),
 }));
 
 import useAuth from '../auth/useAuth';
@@ -27,8 +27,8 @@ describe('DepartmentFormPage', () => {
   it('renders create department form for new department', () => {
     mockUseAuth.mockReturnValue({ loading: false, isAuthenticated: true, hasPermission: () => true });
     mockUseDepartment.mockReturnValue({ data: undefined, isLoading: false, isError: false });
-    mockUseCreateDepartment.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
-    mockUseUpdateDepartment.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
+    mockUseCreateDepartment.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
+    mockUseUpdateDepartment.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
 
     render(
       <MemoryRouter initialEntries={['/departments/new']}>
@@ -62,8 +62,8 @@ describe('DepartmentFormPage', () => {
       isLoading: false,
       isError: false,
     });
-    mockUseCreateDepartment.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
-    mockUseUpdateDepartment.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
+    mockUseCreateDepartment.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
+    mockUseUpdateDepartment.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
 
     render(
       <MemoryRouter initialEntries={['/departments/1/edit']}>
@@ -79,3 +79,6 @@ describe('DepartmentFormPage', () => {
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeDefined();
   });
 });
+
+
+

@@ -5,9 +5,9 @@ import { MemoryRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
-const mockUseAudit = vi.fn();
-const mockUseAuditSummary = vi.fn();
-const mockUseExportAuditLogs = vi.fn();
+const mockUseAudit = vi.fn<unknown[], unknown>();
+const mockUseAuditSummary = vi.fn<unknown[], unknown>();
+const mockUseExportAuditLogs = vi.fn<unknown[], unknown>();
 
 vi.mock('../hooks/useAudit', () => ({
   useAudit: () => mockUseAudit(),
@@ -26,13 +26,13 @@ describe('AuditPage', () => {
     mockUseAudit.mockReturnValue({
       data: { results: [], count: 0 },
       isLoading: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
     mockUseAuditSummary.mockReturnValue({
       data: { actions: [], daily_trend: [], roles: [] },
       isLoading: false,
     });
-    mockUseExportAuditLogs.mockReturnValue({ mutateAsync: vi.fn(), isLoading: false });
+    mockUseExportAuditLogs.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), isLoading: false });
   });
 
   it('renders audit centre and filters', async () => {
@@ -50,3 +50,6 @@ describe('AuditPage', () => {
     expect(screen.getByRole('button', { name: 'Export CSV' })).toBeTruthy();
   });
 });
+
+
+

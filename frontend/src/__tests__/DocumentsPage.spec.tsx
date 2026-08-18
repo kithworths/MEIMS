@@ -4,15 +4,15 @@ import { describe, expect, it, beforeEach, vi } from 'vitest';
 
 vi.mock('../auth/useAuth', () => ({
   __esModule: true,
-  default: vi.fn(),
+  default: vi.fn<unknown[], unknown>(),
 }));
 
 vi.mock('../hooks/useDocuments', () => ({
   __esModule: true,
-  useDocuments: vi.fn(),
-  useCreateDocument: vi.fn(),
-  useUploadDocumentVersion: vi.fn(),
-  useDeleteDocument: vi.fn(),
+  useDocuments: vi.fn<unknown[], unknown>(),
+  useCreateDocument: vi.fn<unknown[], unknown>(),
+  useUploadDocumentVersion: vi.fn<unknown[], unknown>(),
+  useDeleteDocument: vi.fn<unknown[], unknown>(),
 }));
 
 import useAuth from '../auth/useAuth';
@@ -25,7 +25,7 @@ const mockUseDeleteDocument = useDeleteDocument as unknown as { mockReturnValue:
 describe('DocumentsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    global.confirm = vi.fn(() => true);
+    global.confirm = vi.fn<[string?], boolean>(() => true);
   });
 
   it('renders documents and deletes a document when confirmed', () => {
@@ -47,10 +47,10 @@ describe('DocumentsPage', () => {
         ],
       },
       isLoading: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
 
-    const deleteMutate = vi.fn();
+    const deleteMutate = vi.fn<unknown[], unknown>();
     mockUseDeleteDocument.mockReturnValue({ mutate: deleteMutate, isLoading: false });
 
     render(<DocumentsPage />);
@@ -65,3 +65,6 @@ describe('DocumentsPage', () => {
     expect(deleteMutate).toHaveBeenCalledWith('doc-1');
   });
 });
+
+
+

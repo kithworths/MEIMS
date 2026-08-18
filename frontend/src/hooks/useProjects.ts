@@ -85,14 +85,14 @@ export function useDeleteProject() {
 
       return { previousData };
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousData) {
+    onError: (_error, _id, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -128,14 +128,14 @@ export function useBulkDeleteProjects() {
 
       return { previousData };
     },
-    onError: (_error, _ids, context) => {
-      if (context?.previousData) {
+    onError: (_error, _ids, onMutateResult, _context) => {
+      if (onMutateResult?.previousData) {
         try {
-          const previous = context.previousData as any[];
+          const previous = onMutateResult.previousData as any[];
           previous.forEach(([queryKey, data]: [unknown, unknown]) => {
             queryClient.setQueryData(queryKey as any, data);
           });
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -156,3 +156,6 @@ export function useProjectDashboard() {
     retry: 1,
   });
 }
+
+
+

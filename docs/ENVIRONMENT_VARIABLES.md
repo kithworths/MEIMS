@@ -8,6 +8,7 @@ This document lists environment variables used by the MEIMS backend.
 - `DEBUG`: Enable or disable debug mode.
 - `ALLOWED_HOSTS`: Comma-separated list of allowed hostnames.
 - `DJANGO_ENVIRONMENT`: Deployment environment name (development/staging/production).
+- `DJANGO_SETTINGS_MODULE`: Django settings module to load, for Docker and deployment orchestration.
 
 ## Database
 

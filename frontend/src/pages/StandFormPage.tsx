@@ -97,7 +97,7 @@ export default function StandFormPage() {
       } else {
         navigate('/stands');
       }
-    } catch (_error) {
+    } catch {
       setFormError('Unable to save stand. Please check the form and try again.');
     }
   };

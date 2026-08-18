@@ -85,6 +85,20 @@ class NotificationAPITests(TestCase):
         notification.refresh_from_db()
         self.assertTrue(notification.is_read)
 
+    def test_mark_read_updates_unread_notification_list_immediately(self):
+        notification = Notification.objects.filter(user=self.user, is_read=False).first()
+        self.assertIsNotNone(notification)
+
+        unread_list_before = self.client.get(reverse('notification-list'), {'unread': 'true'})
+        self.assertEqual(unread_list_before.status_code, status.HTTP_200_OK)
+        self.assertEqual(unread_list_before.json()['data']['count'], 1)
+
+        self.client.post(reverse('notification-mark-read', args=[notification.id]))
+
+        unread_list_after = self.client.get(reverse('notification-list'), {'unread': 'true'})
+        self.assertEqual(unread_list_after.status_code, status.HTTP_200_OK)
+        self.assertEqual(unread_list_after.json()['data']['count'], 0)
+
     def test_archive_notification_updates_notification(self):
         notification = Notification.objects.filter(user=self.user, is_archived=False).first()
         self.assertIsNotNone(notification)

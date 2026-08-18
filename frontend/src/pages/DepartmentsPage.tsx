@@ -30,7 +30,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import useAuth from '../auth/useAuth';
-import { useDepartments, useBulkDeleteDepartments } from '../hooks/useDepartments';
+import { useDepartments, useBulkDeleteDepartments, useExportDepartments } from '../hooks/useDepartments';
+import { useNotification } from '../contexts/NotificationContext';
 
 const PAGE_SIZE = 20;
 const SORT_OPTIONS = [
@@ -53,10 +54,11 @@ export default function DepartmentsPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const notify = useNotification();
 
   const departmentsQuery = useDepartments({ page, pageSize: PAGE_SIZE, search, status, ordering });
   const bulkDeleteMutation = useBulkDeleteDepartments();
+  const exportMutation = useExportDepartments();
 
   const departments = useMemo(() => departmentsQuery.data?.results ?? [], [departmentsQuery.data]);
   const totalDepartments = departmentsQuery.data?.count ?? 0;
@@ -81,13 +83,13 @@ export default function DepartmentsPage() {
 
   const handleBulkDelete = async () => {
     setErrorMessage(null);
-    setSuccessMessage(null);
+    // clear handled via notify
 
     try {
       await bulkDeleteMutation.mutateAsync(selectedIds);
-      setSuccessMessage(`Deleted ${selectedIds.length} department${selectedIds.length === 1 ? '' : 's'} successfully.`);
+      notify.notify({ message: `Deleted ${selectedIds.length} department${selectedIds.length === 1 ? '' : 's'} successfully.`, severity: 'success' });
       setSelectedIds([]);
-    } catch (error) {
+    } catch {
       setErrorMessage('Unable to delete selected departments. Please try again.');
     } finally {
       setDeleteOpen(false);
@@ -170,9 +172,28 @@ export default function DepartmentsPage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
-                <Button fullWidth variant="contained" onClick={() => departmentsQuery.refetch()}>
-                  Refresh
-                </Button>
+                <Stack direction="row" spacing={1}>
+                  <Button fullWidth variant="contained" onClick={() => departmentsQuery.refetch()}>
+                    Refresh
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={async () => {
+                      const blob = await exportMutation.mutateAsync({ page, pageSize: PAGE_SIZE, search, status, ordering });
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.setAttribute('download', 'departments_export.csv');
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      window.URL.revokeObjectURL(url);
+                    }}
+                    disabled={exportMutation.status === 'pending' || !auth.hasPermission('departments.Export')}
+                  >
+                    Export CSV
+                  </Button>
+                </Stack>
               </Grid>
             </Grid>
           </Paper>
@@ -188,7 +209,6 @@ export default function DepartmentsPage() {
       </Grid>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
-      {successMessage ? <Alert severity="success">{successMessage}</Alert> : null}
 
       <Paper>
         <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>

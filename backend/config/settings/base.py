@@ -20,7 +20,7 @@ from celery.schedules import crontab
 from decouple import AutoConfig, Csv
 
 # Base directory for the Django project. All paths are built from here.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Explicitly load environment variables from the backend `.env` file.
 config = AutoConfig(search_path=BASE_DIR)
@@ -30,8 +30,18 @@ config = AutoConfig(search_path=BASE_DIR)
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-replace-me-with-a-secure-secret')
 
 # Enable or disable debug mode per environment.
-DEBUG = config('DEBUG', default=True, cast=bool)
-TESTING = len(sys.argv) > 1 and sys.argv[1] in ('test', 'testserver')
+
+def _is_testing_environment() -> bool:
+    argv = [arg.lower() for arg in sys.argv]
+    if any(arg in {'test', 'testserver', 'pytest'} or arg.startswith('pytest') or 'pytest' in arg for arg in argv):
+        return True
+    if os.environ.get('PYTEST_CURRENT_TEST') or os.environ.get('PYTEST_VERSION'):
+        return True
+    return bool(os.environ.get('DJANGO_TESTING'))
+
+
+TESTING = _is_testing_environment()
+DEBUG = False if TESTING else config('DEBUG', default=True, cast=bool)
 
 # Enable GeoDjango only when a GIS-enabled database is configured.
 GIS_ENABLED = config('GIS_ENABLED', default=False, cast=bool)
@@ -299,10 +309,20 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': config('DJANGO_THROTTLE_ANON_RATE', default='100/hour'),
         'user': config('DJANGO_THROTTLE_USER_RATE', default='1000/hour'),
+        # Per-scope throttle for authentication endpoints (login, refresh)
+        'auth': config('DJANGO_THROTTLE_AUTH_RATE', default='10/minute'),
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': config('DJANGO_REST_PAGE_SIZE', default=50, cast=int),
 }
+
+if TESTING:
+    REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
+    REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
+        'anon': '10000/hour',
+        'user': '10000/hour',
+        'auth': '10000/minute',
+    }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'MEIMS API',
@@ -328,6 +348,9 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
 }
 
+# Allow a separate JWT signing key (recommended for production)
+SIMPLE_JWT['SIGNING_KEY'] = config('JWT_SIGNING_KEY', default=SIMPLE_JWT.get('SIGNING_KEY', SECRET_KEY))
+
 # Password reset settings for frontend integration and token expiry.
 PASSWORD_RESET_TOKEN_MAX_AGE_SECONDS = config('PASSWORD_RESET_TOKEN_MAX_AGE_SECONDS', default=3600, cast=int)
 PASSWORD_RESET_URL = config('PASSWORD_RESET_URL', default='http://localhost:3000/reset-password')
@@ -335,16 +358,19 @@ PASSWORD_RESET_SALT = config('PASSWORD_RESET_SALT', default='DEFAULT_PASSWORD_RE
 
 # CORS configuration for React frontends running on localhost:5173 and default dev ports.
 # https://github.com/adamchainz/django-cors-headers
+DEFAULT_CORS_ALLOWED_ORIGINS = 'http://localhost:3000,http://localhost:5173' if DEBUG else ''
+DEFAULT_CSRF_TRUSTED_ORIGINS = 'http://localhost:3000,http://localhost:5173' if DEBUG else ''
+
 CORS_ALLOW_ALL_ORIGINS = config('DJANGO_CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
 CORS_ALLOWED_ORIGINS = config(
     'DJANGO_CORS_ALLOWED_ORIGINS',
-    default='http://localhost:3000,http://localhost:5173',
+    default=DEFAULT_CORS_ALLOWED_ORIGINS,
     cast=Csv(),
 )
 CORS_ALLOW_CREDENTIALS = config('DJANGO_CORS_ALLOW_CREDENTIALS', default=True, cast=bool)
 CSRF_TRUSTED_ORIGINS = config(
     'DJANGO_CSRF_TRUSTED_ORIGINS',
-    default='http://localhost:3000,http://localhost:5173',
+    default=DEFAULT_CSRF_TRUSTED_ORIGINS,
     cast=Csv(),
 )
 
@@ -411,7 +437,7 @@ SECURE_BROWSER_XSS_FILTER = config('DJANGO_SECURE_BROWSER_XSS_FILTER', default=T
 X_FRAME_OPTIONS = config('DJANGO_X_FRAME_OPTIONS', default='DENY')
 CSP_DEFAULT_SRC = config('DJANGO_CSP_DEFAULT_SRC', default="'self'")
 CSP_SCRIPT_SRC = config('DJANGO_CSP_SCRIPT_SRC', default="'self'")
-CSP_STYLE_SRC = config('DJANGO_CSP_STYLE_SRC', default="'self' 'unsafe-inline'")
+CSP_STYLE_SRC = config('DJANGO_CSP_STYLE_SRC', default=("'self' 'unsafe-inline'" if DEBUG else "'self'"))
 CSP_IMG_SRC = config('DJANGO_CSP_IMG_SRC', default="'self' data:")
 CSP_CONNECT_SRC = config('DJANGO_CSP_CONNECT_SRC', default="'self'")
 PERMISSIONS_POLICY = config('DJANGO_PERMISSIONS_POLICY', default='geolocation=(), microphone=(), camera=(), payment=()')

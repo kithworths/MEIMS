@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Snackbar from '@mui/material/Snackbar';
+import { useNotification } from '../contexts/NotificationContext';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
@@ -40,7 +40,7 @@ export default function StandDetailsPage() {
   const [transitionId, setTransitionId] = useState('');
   const [isOverride, setIsOverride] = useState(false);
   const [reason, setReason] = useState('');
-  const [notification, setNotification] = useState<string | null>(null);
+  const notify = useNotification();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const standQuery = useStand(id);
@@ -51,9 +51,9 @@ export default function StandDetailsPage() {
   const createStageHistoryMutation = useCreateStageHistory();
 
   const stand = standQuery.data;
-  const stages = stagesQuery.data?.results ?? [];
-  const transitions = transitionsQuery.data?.results ?? [];
-  const stageHistories = stageHistoriesQuery.data?.results ?? [];
+  const stages = useMemo(() => stagesQuery.data?.results ?? [], [stagesQuery.data?.results]);
+  const transitions = useMemo(() => transitionsQuery.data?.results ?? [], [transitionsQuery.data?.results]);
+  const stageHistories = useMemo(() => stageHistoriesQuery.data?.results ?? [], [stageHistoriesQuery.data?.results]);
 
   const project = useMemo(
     () => projectsQuery.data?.results.find((proj) => proj.id === stand?.project),
@@ -96,11 +96,11 @@ export default function StandDetailsPage() {
         is_override: isOverride,
         reason: isOverride ? reason.trim() : undefined,
       });
-      setNotification('Stand advanced to the next stage.');
+      notify.notify({ message: 'Stand advanced to the next stage.', severity: 'success' });
       setTransitionId('');
       setIsOverride(false);
       setReason('');
-    } catch (_error) {
+    } catch {
       setErrorMessage('Unable to advance the stand stage. Please try again.');
     }
   };
@@ -360,12 +360,7 @@ export default function StandDetailsPage() {
         </Grid>
       ) : null}
 
-      <Snackbar
-        open={Boolean(notification)}
-        autoHideDuration={4000}
-        onClose={() => setNotification(null)}
-        message={notification}
-      />
+      {/* Notifications are handled by global NotificationProvider */}
     </Box>
   );
 }

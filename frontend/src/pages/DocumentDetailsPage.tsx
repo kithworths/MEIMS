@@ -109,7 +109,7 @@ export default function DocumentDetailsPage() {
                     let parsedMetadata: Record<string, unknown> = {};
                     try {
                       parsedMetadata = JSON.parse(metadataJson);
-                    } catch (error) {
+                    } catch {
                       window.alert('Metadata JSON is invalid.');
                       return;
                     }

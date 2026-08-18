@@ -37,6 +37,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
 from config import celery_app
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -578,11 +579,14 @@ class AuthLoginView(JSONResponseMixin, TokenObtainPairView):
     audit_module = 'authentication'
     audit_action = 'Login'
     audit_description = 'User logged in successfully.'
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth'
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         request.audit_user = serializer.user
+        # ScopedRateThrottle with scope 'auth' enforces auth-specific rate limits from settings
         return self.success_response(
             data=serializer.validated_data,
             message='Login successful.',

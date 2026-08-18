@@ -36,5 +36,9 @@ class AuditLogSerializer(serializers.ModelSerializer):
         if not obj.user:
             return []
 
-        roles = obj.user.roles.filter(is_active=True).values_list('name', flat=True)
-        return list(roles)
+        prefetched = getattr(obj.user, '_prefetched_objects_cache', {})
+        roles = prefetched.get('roles')
+        if roles is not None:
+            return [role.name for role in roles if role.is_active]
+
+        return list(obj.user.roles.filter(is_active=True).values_list('name', flat=True))

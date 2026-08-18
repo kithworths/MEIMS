@@ -74,27 +74,33 @@ export function useArchiveAllNotifications(): UseMutationResult<{ updated: numbe
   });
 }
 
-export function useUnreadNotificationCount(): UseQueryResult<number, Error> {
-  return useQuery<number, Error>({
-    queryKey: ['notifications', 'count', 'unread'],
-    queryFn: async (): Promise<number> => {
-      const response = await notificationsApi.getNotifications({ page: 1, pageSize: 1, unread: true, archived: false });
-      return response.count;
+export function useUnreadNotificationCount(enabled = true): UseQueryResult<number, Error> {
+  return useQuery<number, Error>(
+    {
+      queryKey: ['notifications', 'count', 'unread'],
+      queryFn: async (): Promise<number> => {
+        const response = await notificationsApi.getNotifications({ page: 1, pageSize: 1, unread: true, archived: false });
+        return response.count;
+      },
+      staleTime: 10_000,
+      refetchInterval: 30_000,
+      retry: 1,
+      enabled,
     },
-    staleTime: 10_000,
-    refetchInterval: 30_000,
-    retry: 1,
-  });
+  );
 }
 
-export function useRecentNotifications(): UseQueryResult<notificationsApi.NotificationListResponse, Error> {
-  return useQuery<notificationsApi.NotificationListResponse, Error>({
-    queryKey: ['notifications', 'recent'],
-    queryFn: async (): Promise<notificationsApi.NotificationListResponse> => {
-      return notificationsApi.getNotifications({ page: 1, pageSize: 5, archived: false, ordering: '-created_at' });
+export function useRecentNotifications(enabled = true): UseQueryResult<notificationsApi.NotificationListResponse, Error> {
+  return useQuery<notificationsApi.NotificationListResponse, Error>(
+    {
+      queryKey: ['notifications', 'recent'],
+      queryFn: async (): Promise<notificationsApi.NotificationListResponse> => {
+        return notificationsApi.getNotifications({ page: 1, pageSize: 5, archived: false, ordering: '-created_at' });
+      },
+      staleTime: 10_000,
+      refetchInterval: 30_000,
+      retry: 1,
+      enabled,
     },
-    staleTime: 10_000,
-    refetchInterval: 30_000,
-    retry: 1,
-  });
+  );
 }

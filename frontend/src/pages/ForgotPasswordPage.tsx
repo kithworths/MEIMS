@@ -28,8 +28,7 @@ export default function ForgotPasswordPage() {
       setMessage(
         'If that address is known, password reset instructions will be sent to the email account. Please check your inbox.',
       );
-    } catch (_error) {
-      void _error;
+    } catch {
       setErrors('Unable to request password reset at this time. Please try again later.');
     } finally {
       setIsSubmitting(false);

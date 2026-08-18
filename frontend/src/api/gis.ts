@@ -77,3 +77,8 @@ export async function updateGISLocation(id: string, payload: Partial<GISLocation
   const response = await api.patch<GISLocation>(`gis-locations/${id}/`, payload);
   return response.data;
 }
+
+export async function softDeleteGISLocation(id: string) {
+  const response = await api.post(`gis-locations/${id}/soft_delete/`);
+  return response.data;
+}

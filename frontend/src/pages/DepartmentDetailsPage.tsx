@@ -36,7 +36,7 @@ export default function DepartmentDetailsPage() {
     try {
       await deleteMutation.mutateAsync(id);
       navigate('/departments');
-    } catch (error) {
+    } catch {
       setFeedback('Unable to delete the department. Please try again.');
     }
   };

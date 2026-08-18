@@ -8,15 +8,17 @@ export interface GISQueryOptions {
   geometry_type?: string;
   srid?: number;
   ordering?: string;
+  enabled?: boolean;
 }
 
 export function useGISLocations(options: GISQueryOptions = {}) {
-  const { page = 1, pageSize = 20, search, geometry_type, srid, ordering } = options;
+  const { page = 1, pageSize = 20, search, geometry_type, srid, ordering, enabled = true } = options;
   return useQuery<gisApi.GISLocationListResponse, Error>({
     queryKey: ['gis-locations', page, pageSize, search, geometry_type, srid, ordering],
     queryFn: () => gisApi.getGISLocations({ page, pageSize, search, geometry_type, srid, ordering }),
     staleTime: 1000 * 60,
     retry: 1,
+    enabled,
   });
 }
 
@@ -44,4 +46,14 @@ export function useUpdateGISLocation() {
       },
     },
   );
+}
+
+export function useSoftDeleteGISLocation() {
+  const qc = useQueryClient();
+  return useMutation<any, Error, string>({
+    mutationFn: (id: string) => gisApi.softDeleteGISLocation(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['gis-locations'] });
+    },
+  });
 }

@@ -5,11 +5,11 @@ import { MemoryRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
-const mockUseNotifications = vi.fn();
-const mockUseMarkNotificationRead = vi.fn();
-const mockUseArchiveNotification = vi.fn();
-const mockUseMarkAllNotificationsRead = vi.fn();
-const mockUseArchiveAllNotifications = vi.fn();
+const mockUseNotifications = vi.fn<unknown[], unknown>();
+const mockUseMarkNotificationRead = vi.fn<unknown[], unknown>();
+const mockUseArchiveNotification = vi.fn<unknown[], unknown>();
+const mockUseMarkAllNotificationsRead = vi.fn<unknown[], unknown>();
+const mockUseArchiveAllNotifications = vi.fn<unknown[], unknown>();
 
 vi.mock('../hooks/useNotifications', () => ({
   useNotifications: () => mockUseNotifications(),
@@ -56,12 +56,12 @@ describe('NotificationsPage', () => {
         ],
       },
       isLoading: false,
-      refetch: vi.fn(),
+      refetch: vi.fn<unknown[], unknown>(),
     });
-    mockUseMarkNotificationRead.mockReturnValue({ mutateAsync: vi.fn(), status: 'idle' });
-    mockUseArchiveNotification.mockReturnValue({ mutateAsync: vi.fn(), status: 'idle' });
-    mockUseMarkAllNotificationsRead.mockReturnValue({ mutateAsync: vi.fn(), status: 'idle' });
-    mockUseArchiveAllNotifications.mockReturnValue({ mutateAsync: vi.fn(), status: 'idle' });
+    mockUseMarkNotificationRead.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), status: 'idle' });
+    mockUseArchiveNotification.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), status: 'idle' });
+    mockUseMarkAllNotificationsRead.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), status: 'idle' });
+    mockUseArchiveAllNotifications.mockReturnValue({ mutateAsync: vi.fn<unknown[], unknown>(), status: 'idle' });
   });
 
   it('renders the notification center and shows unread count', async () => {
@@ -79,3 +79,6 @@ describe('NotificationsPage', () => {
     expect(screen.getByRole('button', { name: 'Mark all read' })).toBeTruthy();
   });
 });
+
+
+

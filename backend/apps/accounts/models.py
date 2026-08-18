@@ -16,12 +16,23 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
+    def _generate_employee_number(self):
+        """Create a unique employee number when one is not supplied."""
+        while True:
+            candidate = f'EMP-{uuid.uuid4().hex[:8].upper()}'
+            if not self.model.objects.filter(employee_number=candidate).exists():
+                return candidate
+
     def _create_user(self, email, password, **extra_fields):
         """Create and save a User with the given email and password."""
         if not email:
             raise ValueError(_('The email address must be set'))
 
         email = self.normalize_email(email)
+        employee_number = extra_fields.get('employee_number')
+        if not employee_number or self.model.objects.filter(employee_number=employee_number).exists():
+            extra_fields['employee_number'] = self._generate_employee_number()
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -174,6 +185,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_role_names(self):
         """Return the names of all active RBAC roles assigned to this user."""
         return list(self.roles.filter(is_active=True).values_list('name', flat=True))
+
+    def get_permission_strings(self):
+        """Return the active permission strings assigned via the user's roles."""
+        permissions = (
+            self.roles.filter(is_active=True, permissions__is_active=True)
+            .values_list('permissions__module', 'permissions__action')
+            .distinct()
+        )
+        return [f'{module}.{action}' for module, action in permissions if module and action]
 
     def has_permission(self, module, action):
         """Return True when the user has a matching active permission via assigned roles."""

@@ -152,7 +152,7 @@ export default function GISPage() {
     ordering: '-created_at',
   });
 
-  const locations = data?.results ?? [];
+  const locations = useMemo(() => data?.results ?? [], [data?.results]);
 
   const activeLocations = useMemo(() => locations.filter((location) => !location.is_deleted && location.is_active), [locations]);
 

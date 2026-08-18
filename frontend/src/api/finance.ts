@@ -198,6 +198,11 @@ export async function deletePayment(id: string) {
   await api.delete(`payments/${id}/`);
 }
 
+export async function softDeletePayment(id: string) {
+  const response = await api.post(`payments/${id}/soft_delete/`);
+  return response.data;
+}
+
 export async function reversePayment(id: string, reason: string) {
   const response = await api.post<{ data: Payment }>(`payments/${id}/reverse/`, { reason });
   return response.data.data;
@@ -248,6 +253,11 @@ export async function deletePaymentAllocation(id: string) {
   await api.delete(`payment-allocations/${id}/`);
 }
 
+export async function softDeletePaymentAllocation(id: string) {
+  const response = await api.post(`payment-allocations/${id}/soft_delete/`);
+  return response.data;
+}
+
 export async function getPaymentReceipts(params: {
   page?: number;
   pageSize?: number;
@@ -281,6 +291,11 @@ export async function updatePaymentReceipt(id: string, payload: PaymentReceiptUp
 
 export async function deletePaymentReceipt(id: string) {
   await api.delete(`payment-receipts/${id}/`);
+}
+
+export async function softDeletePaymentReceipt(id: string) {
+  const response = await api.post(`payment-receipts/${id}/soft_delete/`);
+  return response.data;
 }
 
 export async function reprintPaymentReceipt(id: string) {

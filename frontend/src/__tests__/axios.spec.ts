@@ -33,6 +33,16 @@ describe('axios interceptors', () => {
     expect(resp.status).toBe(200);
   });
 
+  it('normalizes local request URLs before sending', async () => {
+    mock.onPost('/auth/login/').reply((config) => {
+      expect(config.url).toBe('/auth/login/');
+      return [200, { data: { ok: true } }];
+    });
+
+    const resp = await api.post('auth/login/', { email: 'test@example.com', password: 'password' });
+    expect(resp.status).toBe(200);
+  });
+
   it('refreshes token on 401 and retries original request', async () => {
     // No access token, but refresh token exists
     window.localStorage.setItem('meims_refresh_token', 'refresh-1');

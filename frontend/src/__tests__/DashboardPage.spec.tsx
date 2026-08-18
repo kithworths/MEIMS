@@ -5,16 +5,16 @@ import { MemoryRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
-const mockUseDashboardStats = vi.fn();
-const mockUseFinanceDashboard = vi.fn();
-const mockUseProjectDashboard = vi.fn();
-const mockUseTasksDashboard = vi.fn();
-const mockUsePendingStandApprovals = vi.fn();
-const mockUseRecentNotifications = vi.fn();
-const mockUseGISLocations = vi.fn();
-const mockUseDocuments = vi.fn();
-const mockUseDepartments = vi.fn();
-const mockUseAuditSummary = vi.fn();
+const mockUseDashboardStats = vi.fn<unknown[], unknown>();
+const mockUseFinanceDashboard = vi.fn<unknown[], unknown>();
+const mockUseProjectDashboard = vi.fn<unknown[], unknown>();
+const mockUseTasksDashboard = vi.fn<unknown[], unknown>();
+const mockUsePendingStandApprovals = vi.fn<unknown[], unknown>();
+const mockUseRecentNotifications = vi.fn<unknown[], unknown>();
+const mockUseGISLocations = vi.fn<unknown[], unknown>();
+const mockUseDocuments = vi.fn<unknown[], unknown>();
+const mockUseDepartments = vi.fn<unknown[], unknown>();
+const mockUseAuditSummary = vi.fn<unknown[], unknown>();
 
 vi.mock('../hooks/useDashboardStats', () => ({
   useDashboardStats: () => mockUseDashboardStats(),
@@ -97,3 +97,6 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Upcoming deadlines')).toBeDefined();
   });
 });
+
+
+

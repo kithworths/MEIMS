@@ -2,6 +2,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { memo } from 'react';
 
 const labelMap: Record<string, string> = {
   '': 'Dashboard',
@@ -16,7 +17,7 @@ const labelMap: Record<string, string> = {
   settings: 'Settings',
 };
 
-export default function AppBreadcrumbs() {
+function AppBreadcrumbs() {
   const location = useLocation();
   const segments = location.pathname.split('/').filter(Boolean);
 
@@ -43,3 +44,5 @@ export default function AppBreadcrumbs() {
     </Breadcrumbs>
   );
 }
+
+export default memo(AppBreadcrumbs);

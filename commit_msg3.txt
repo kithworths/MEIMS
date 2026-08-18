@@ -1,0 +1,3 @@
+perf(api): add caching to finance export/dashboard and notifications list; minor queryset improvements
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>

@@ -37,14 +37,17 @@ class Report(models.Model):
     error_message = models.TextField(blank=True)
 
     generated_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='reports_generated')
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'report'
         verbose_name_plural = 'reports'
         ordering = ['-created_at']
-        indexes = [models.Index(fields=['report_type'], name='report_type_idx')]
+        indexes = [
+            models.Index(fields=['status', 'created_at'], name='report_status_created_idx'),
+            models.Index(fields=['report_type'], name='report_type_idx'),
+        ]
 
     def __str__(self):
         return f"{self.report_name} ({self.report_type})"

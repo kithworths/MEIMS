@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F, Q
 from django.utils import timezone
 
 from apps.projects.models import Project
@@ -12,7 +13,7 @@ from apps.stands.models import Stand, StandStage
 
 class TaskBaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    created_at = models.DateTimeField(default=timezone.now, editable=False, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -128,7 +129,12 @@ class ProjectTask(TaskBaseModel):
         verbose_name = 'project task'
         verbose_name_plural = 'project tasks'
         ordering = ['-planned_start_date', 'title']
+        constraints = [
+            models.CheckConstraint(check=Q(estimated_hours__gte=0) | Q(estimated_hours__isnull=True), name='projecttask_estimated_hours_nonnegative_chk'),
+            models.CheckConstraint(check=Q(spent_hours__gte=0) | Q(spent_hours__isnull=True), name='projecttask_spent_hours_nonnegative_chk'),
+        ]
         indexes = [
+            models.Index(fields=['is_active', 'is_deleted', 'status', 'created_at'], name='ptask_status_created_idx'),
             models.Index(fields=['project'], name='projecttask_project_idx'),
             models.Index(fields=['stand'], name='projecttask_stand_idx'),
             models.Index(fields=['assignee'], name='projecttask_assignee_idx'),
@@ -404,6 +410,9 @@ class SiteVisit(TaskBaseModel):
         verbose_name = 'site visit'
         verbose_name_plural = 'site visits'
         ordering = ['scheduled_start']
+        constraints = [
+            models.CheckConstraint(check=Q(scheduled_end__gt=F('scheduled_start')), name='sitevisit_window_chk'),
+        ]
         indexes = [
             models.Index(fields=['engineer'], name='sitevisit_engineer_idx'),
             models.Index(fields=['scheduled_start'], name='sitevisit_start_idx'),

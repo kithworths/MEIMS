@@ -24,8 +24,7 @@ export default function LoginPage() {
       setFormError(undefined);
       await auth.login(credentials.email, credentials.password);
       navigate(from, { replace: true });
-    } catch (_error) {
-      void _error;
+    } catch {
       setFormError('Unable to sign in. Please check your credentials and try again.');
     } finally {
       setIsSubmitting(false);

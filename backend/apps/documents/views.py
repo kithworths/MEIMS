@@ -17,7 +17,7 @@ from .services import AttachmentService, DocumentService, PlanService
 
 
 class DocumentViewSet(BaseModelViewSet):
-    queryset = Document.objects.prefetch_related('versions').all()
+    queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     permission_classes = [DocumentPermissions]
     permission_module = 'documents'
@@ -95,7 +95,7 @@ class AttachmentViewSet(BaseModelViewSet):
 
 
 class PlanViewSet(BaseModelViewSet):
-    queryset = Plan.objects.prefetch_related('linked_documents', 'versions').all()
+    queryset = Plan.objects.prefetch_related('linked_documents').all()
     serializer_class = PlanSerializer
     permission_classes = [PlanPermissions]
     permission_module = 'plans'

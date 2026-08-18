@@ -10,6 +10,7 @@ services:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DJANGO_ENVIRONMENT=production
     ports:
       - 8000:8000
     depends_on:
